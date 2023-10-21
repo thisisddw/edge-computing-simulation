@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "experiment.h"
+#include "progressbar.h"
 
 /**
  * @brief Perform experiments with settings in parameter.h.
@@ -18,12 +19,15 @@
 void main_loop(vector<Experiment *> experiments)
 {
     global_initialize();
+
+    ProgressBar pb(50);
+
     for(int i = 0; i < N_SLOT; i++)
     {
         channelgains_update();
         for(auto e: experiments)
             e->step();
-        // if(i % (N_SLOT/100) == 0)
-        //     printf("%d\n", i);
+        pb.update((double)i / N_SLOT);
     }
+    printf("\n");
 }

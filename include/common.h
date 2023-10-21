@@ -18,6 +18,7 @@
 #include <time.h>
 #include <random>
 #include <iostream>
+#include <string>
 #include "parameters.h"
 
 using std::vector;
