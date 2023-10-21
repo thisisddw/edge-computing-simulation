@@ -18,8 +18,8 @@ static std::default_random_engine generator(RANDOM_SEED);
  * @brief Generate random number following Ricean distribution with parameter K.
  * 
  * @details
- * I adopt this method from https://dsp.stackexchange.com/questions/84493/how-to-code-rician-fading-channel-gains-from-k-factor.
- * A nice article for Rician fading: https://ma-mimo.ellintech.se/2020/03/02/rician-fading-a-channel-model-often-misunderstood/.
+ * I adopt this method from https://dsp.stackexchange.com/questions/84493/how-to-code-rician-fading-channel-gains-from-k-factor
+ * A nice article for Rician fading: https://ma-mimo.ellintech.se/2020/03/02/rician-fading-a-channel-model-often-misunderstood/
 */
 double rician_fading(double K)
 {
@@ -49,12 +49,6 @@ void channelgains_update()
             channelgains_matrix[i][j] = path_loss[i][j] * pow(10, rician_fading(RICIAN_K)/10);
 }
 
-
-/**
- * I found log2(1e-13) overflow.
-*/
-#define safer_log2(x) ((fabs((x)) < 1e-10) ? log2((x)*1e10) - log2(1e10) : log2(x))
-
 /**
  * @brief Calculate transmission rate of each user towards a particular edge node.
  * @param w brandwith
@@ -71,6 +65,6 @@ vector<double> calculate_transmition_rates(double w, vector<double> h, vector<do
         tmp += h[i] * p[i];
     vector<double> rate(n);
     for(int i = 0; i < n; i++)
-        rate[i] = w * safer_log2(1 + (h[i] * p[i]) / (tmp - h[i] * p[i] + N_0));
+        rate[i] = w * log2(1 + (h[i] * p[i]) / (tmp - h[i] * p[i] + N_0));
     return rate;
 }
