@@ -25,4 +25,4 @@ run: $(BUILD_DIR)/$(TARGET_EXEC)
 clean:
 	-@rm $(BUILD_DIR)/*.o $(BUILD_DIR)/$(TARGET_EXEC)
 
-.PHONY: clean
+.PHONY: run clean
