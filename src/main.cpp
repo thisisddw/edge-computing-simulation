@@ -9,6 +9,7 @@
 #include "common.h"
 #include "matplotlibcpp.h"
 #include "experiments/randomexp.h"
+#include "experiments/report.h"
 
 namespace plt = matplotlibcpp;
 
@@ -26,8 +27,10 @@ int main()
 
     main_loop(exps);
 
-    for(Experiment *p: exps)
-        ((BaseExperiment *)p)->plot_agents();
+    // for(Experiment *p: exps)
+    //     ((BaseExperiment *)p)->plot_save_agents(RESULT_PATH);
+    
+    report(RESULT_PATH, exps);
 
     return 0;
 }

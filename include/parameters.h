@@ -28,14 +28,15 @@
 
 /*simulation settings*/
 
-#define RANDOM_SEED 2011421 //(time(NULL))
-#define N_SLOT 20000    // number of time slots
-#define TTR 1e-3        // time of one transmit frame
+#define RANDOM_SEED 2011421         //(time(NULL))
+#define N_SLOT 20000                // number of time slots
+#define TTR 1e-3                    // time of one transmit frame
+#define RESULT_PATH "./result/"     // path to store any result files
 
 /* only for test purpose */
 
 #define K_CPU 1.9e3
-#define WEIGHT_E 6e2    // parameter for utility
-#define WEIGHT_F 2e-6   // parameter for utility
-#define N_GROUP 2       // number of BS in a group
+#define WEIGHT_E 6e2        // parameter for utility
+#define WEIGHT_F 2e-6       // parameter for utility
+#define N_GROUP 2           // number of BS in a group
 #define MAX_ITER (N_USER*8) // number of iteration in full-CSI algorithm

@@ -11,6 +11,7 @@
 #pragma once
 
 #include "baseagent.h"
+#include "matplotlibcpp.h"
 
 class AgentTracker {
     BaseAgent *agent;
@@ -52,5 +53,23 @@ public:
         plt::legend();
 
         plt::show();
+    }
+    void plot_save(const char *path, const char *title = "Default Title")
+    {
+        namespace plt = matplotlibcpp;
+
+        plt::suptitle(title);
+
+        plt::subplot2grid(2, 1, 0, 0);
+        plt::named_plot("transmission rate", trans_rate);
+        plt::legend();
+
+        plt::subplot2grid(2, 1, 1, 0);
+        plt::named_plot("sending", n_inst_sending);
+        plt::named_plot("executing", n_inst_executing);
+        plt::named_plot("done", n_inst_done);
+        plt::legend();
+
+        plt::save(path);
     }
 };
