@@ -54,8 +54,10 @@ void channelgains_update()
  * @param w brandwith
  * @param h channel gain vector of users
  * @param p transmission power of each user
+ * @return A vector of pair<double, double>, the first is transmition rate, the second
+ * is aggregate information.
 */
-vector<double> calculate_transmition_rates(double w, vector<double> h, vector<double> p)
+vector<std::pair<double, double>> calculate_transmition_rates(double w, vector<double> h, vector<double> p)
 {
     assert(h.size() == p.size());
 
@@ -63,8 +65,9 @@ vector<double> calculate_transmition_rates(double w, vector<double> h, vector<do
     double tmp = 0;
     for(int i = 0; i < n; i++)
         tmp += h[i] * p[i];
-    vector<double> rate(n);
+    vector<std::pair<double, double>> rate(n);
     for(int i = 0; i < n; i++)
-        rate[i] = w * log2(1 + (h[i] * p[i]) / (tmp - h[i] * p[i] + N_0));
+        rate[i] = {w * log2(1 + (h[i] * p[i]) / (tmp - h[i] * p[i] + N_0)),
+        h[i] / (tmp - h[i] * p[i] + N_0)};
     return rate;
 }

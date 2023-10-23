@@ -53,10 +53,10 @@ protected:
             for(int j = 0; j < N_USER; j++)
                 h[j] = channelgains_matrix[j][i],
                 p[j] = actions[j].p[i];
-            vector<double> r = calculate_transmition_rates(W_SUB, h, p);
+            vector<std::pair<double, double>> r = calculate_transmition_rates(W_SUB, h, p);
             assert(r.size() == N_USER);
             for(int j = 0; j < N_USER; j++)
-                feedbacks[j].r[i] = r[j];
+                feedbacks[j].r[i] = r[j].first;
         }
 
         // copy from testexperiment.h

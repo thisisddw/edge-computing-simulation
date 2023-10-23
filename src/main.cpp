@@ -8,28 +8,26 @@
 
 #include "common.h"
 #include "matplotlibcpp.h"
+#include "experiments/randomexp.h"
 
 namespace plt = matplotlibcpp;
 
-extern void perform_test();
+extern void main_loop(vector<Experiment *> experiments);    // mainloop.cpp
+extern void perform_test();                                 // test.cpp
 
 int main()
 {
-    perform_test();
-    return 0;
+    // perform_test();
+    // return 0;
 
-    global_initialize();
-    channelgains_update();
+    vector<Experiment *> exps = {
+        new RandomExperiment(),
+    };
 
-    vector<double> x(N_USER), y(N_USER);
-    for(int i = 0; i < N_USER; i++)
-        x[i] = user_location[i].x, y[i] = user_location[i].y;
-    plt::scatter(x, y, 5, {{"c","r"}});
-    x.resize(N_BS), y.resize(N_BS);
-    for(int i = 0; i < N_BS; i++)
-        x[i] = bs_location[i].x, y[i] = bs_location[i].y;
-    plt::scatter(x, y, 5, {{"c","b"}});
-    plt::show();
+    main_loop(exps);
+
+    for(Experiment *p: exps)
+        ((BaseExperiment *)p)->plot_agents();
 
     return 0;
 }

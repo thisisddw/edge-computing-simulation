@@ -41,7 +41,8 @@ class ProgressBar {
 
         double elapsed = (double)(clock() - start_time) / CLOCKS_PER_SEC;
         double remaining = elapsed / (progress + 1e-6) - elapsed;
-        printf(" Elapsed: %s, Remaining: %s", time_format((int)elapsed).c_str(), time_format((int)remaining).c_str());
+        printf(" Elapsed: %s, Remaining: %s", time_format((int)(elapsed + 0.5)).c_str(),
+         time_format((int)(remaining + 0.5)).c_str());
     }
 
     void erase()
@@ -53,7 +54,7 @@ class ProgressBar {
     }
 
 public:
-    ProgressBar(int width) : width(width), length(width + 2 + 27 + 10) 
+    ProgressBar(int width) : width(width), length(width + 2 + 27 + 16) 
     {
         start_time = clock();
         last_draw = start_time - GAP;

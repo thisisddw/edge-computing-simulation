@@ -24,6 +24,7 @@ void main_loop(vector<Experiment *> experiments)
 
     for(int i = 0; i < N_SLOT; i++)
     {
+        current_time = i * TTR;
         channelgains_update();
         for(auto e: experiments)
             e->step();

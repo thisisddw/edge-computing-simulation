@@ -52,13 +52,17 @@ public:
             for(int j = 0; j < N_USER; j++)
                 h[j] = channelgains_matrix[j][i],
                 p[j] = actions[j].p[i];
-            vector<double> r = calculate_transmition_rates(W_SUB, h, p);
+            vector<std::pair<double, double>> r = calculate_transmition_rates(W_SUB, h, p);
             assert(r.size() == N_USER);
             for(int j = 0; j < N_USER; j++)
-                feedbacks[j].r[i] = r[j];
+                feedbacks[j].r[i] = r[j].first,
+                feedbacks[j].i[i] = r[j].second,
+                feedbacks[j].a[i] = server_available[i];
         }
+        current_time += TTR;
         for(int i = 0; i < N_USER; i++)
             agents[i]->feedback(feedbacks[i]);
+        current_time -= TTR;
         
         track();
     }

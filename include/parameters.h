@@ -10,17 +10,26 @@
 
 #pragma once
 
-#define RANDOM_SEED 2011421//(time(NULL))
+/*environment settings*/
 
-#define N_USER 6        // number of users
-#define N_BS 10         // number of BS
+#define N_USER 2        // number of users
+#define N_BS 4          // number of BS
 #define RANGE 20        // users and BSs are scattered in [0,RANGE]*[0,RANGE]
 
 #define RICIAN_K 3.981  // K factor of Rician channel    10^0.6
 #define N_0 1e-13       // noise
 #define W_SUB 0.1e6     // bandwidth
 
-#define N_SLOT 200      // number of time slots
+/*agent settings*/
+
+#define JOB_PATH ""     // data path
+#define P_MAX 0.1       // max transmission power
+#define N_LINK 3        // max number of established links of an agent
+
+/*simulation settings*/
+
+#define RANDOM_SEED 2011421 //(time(NULL))
+#define N_SLOT 20000    // number of time slots
 #define TTR 1e-3        // time of one transmit frame
 
 /* only for test purpose */

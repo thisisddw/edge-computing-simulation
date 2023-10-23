@@ -28,7 +28,8 @@ struct Action
 struct Feedback
 {
     double r[N_BS]; // transmit rate to each BS
+    double i[N_BS]; // aggregate information
     bool a[N_BS];   // whether BSs are available
 
-    Feedback() { memset(r, 0, sizeof(r)); memset(a, 0, sizeof(a)); }
+    Feedback() { memset(this, 0, sizeof(Feedback)); }
 };
