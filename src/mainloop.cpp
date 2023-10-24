@@ -26,6 +26,9 @@ void main_loop(vector<Experiment *> experiments)
     {
         current_time = i * TTR;
         channelgains_update();
+    #ifdef FAILURE_ON
+        server_state_update();
+    #endif
         for(auto e: experiments)
             e->step();
         pb.update((double)i / N_SLOT);

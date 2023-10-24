@@ -10,6 +10,11 @@
 
 #pragma once
 
+/*flags*/
+
+#define DEBUG
+#define FAILURE_ON      // comment out this line to disable server failure
+
 /*environment settings*/
 
 #define N_USER 2        // number of users
@@ -25,6 +30,12 @@
 #define JOB_PATH ""     // data path
 #define P_MAX 0.1       // max transmission power
 #define N_LINK 3        // max number of established links of an agent
+
+/*server settings*/
+
+#define F_ID 0          // server F_ID fails during simulation
+#define F_TIME 5        // the failure happens at F_TIME
+#define F_DURATION 5.0  // the failure lasts F_DURATION seconds
 
 /*simulation settings*/
 

@@ -28,12 +28,20 @@ void report(const char *path, vector<Experiment *> exps)
 
     vector<double> x, y;
     for(int i = 0; i < N_USER; i++)
+    {
         x.push_back(user_location[i].x), y.push_back(user_location[i].y);
+        plt::text(x.back() + RANGE/50., y.back() + RANGE/50., "agent" + std::to_string(i));
+    }
     plt::scatter(x, y, 10, {{"label", "user"}});
     x.clear(), y.clear();
     for(int i = 0; i < N_BS; i++)
+    {
         x.push_back(bs_location[i].x), y.push_back(bs_location[i].y);
+        plt::text(x.back() + RANGE/50., y.back() + RANGE/50., "BS" + std::to_string(i));
+    }
     plt::scatter(x, y, 10, {{"label", "base station"}});
+    plt::xlim(-RANGE*0.1, RANGE*1.1);
+    plt::ylim(-RANGE*0.1, RANGE*1.1);
     plt::legend();
     sprintf(buf, "%slocation.png", path);
     plt::save(buf);
@@ -46,6 +54,16 @@ void report(const char *path, vector<Experiment *> exps)
 
     fprintf(f, "Created on %d/%d/%d, %d:%d\n\n",
         lt->tm_mon + 1, lt->tm_mday, lt->tm_year + 1900, lt->tm_hour, lt->tm_min);
+
+    //section 0
+    fprintf(f, "## Flags\n\n");
+#ifdef DEBUG
+    fprintf(f, " - DEBUG\n");
+#endif
+#ifdef FAILURE_ON
+    fprintf(f, " - FAILURE_ON\n");
+#endif
+    fprintf(f, "\n");
 
     // section 1
     fprintf(f, "## Environment Settings\n\n");
@@ -62,6 +80,9 @@ void report(const char *path, vector<Experiment *> exps)
     MAKE_ROW(W_SUB, "bandwidth");
     MAKE_ROW(P_MAX, "max transmission power");
     MAKE_ROW(N_LINK, "max number of established links of an agent");
+    MAKE_ROW(F_ID, "server F_ID fails during simulation");
+    MAKE_ROW(F_TIME, "the failure happens at F_TIME");
+    MAKE_ROW(F_DURATION, "the failure lasts F_DURATION seconds");
     MAKE_ROW(N_SLOT, "number of time slots");
     MAKE_ROW(TTR, "time of one transmit frame");
     MAKE_ROW(RANDOM_SEED, "random seed");
@@ -79,8 +100,9 @@ void report(const char *path, vector<Experiment *> exps)
         fprintf(f, "### %s\n\n", e->get_name());
         for(auto img: imgs)
         {
-            fprintf(f, "![](%s)\n", img);
+            fprintf(f, "![](%s)\n", img.c_str());
         }
+        fprintf(f, "\n");
     }
 
     fclose(f);

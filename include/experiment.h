@@ -59,10 +59,8 @@ public:
                 feedbacks[j].i[i] = r[j].second,
                 feedbacks[j].a[i] = server_available[i];
         }
-        current_time += TTR;
         for(int i = 0; i < N_USER; i++)
             agents[i]->feedback(feedbacks[i]);
-        current_time -= TTR;
         
         track();
     }

@@ -40,6 +40,15 @@ double uniform_real(double a, double b)
 }
 
 /**
+ * @param lambda Expected value is lambda^-1
+*/
+double exponential_distribution(double lambda)
+{
+    std::exponential_distribution<double> exponentialDist(lambda);
+    return exponentialDist(generator);
+}
+
+/**
  * @brief Update channelgains_matrix according to path loss and rician fading.
 */
 void channelgains_update()
@@ -47,6 +56,27 @@ void channelgains_update()
     for(int i = 0; i < N_USER; i++)
         for(int j = 0; j < N_BS; j++)
             channelgains_matrix[i][j] = path_loss[i][j] * pow(10, rician_fading(RICIAN_K)/10);
+}
+
+/**
+ * @brief this function affects server_available, server_recover_time, server_next_error
+*/
+void server_state_update()
+{
+    for(int i = 0; i < N_BS; i++)
+    {
+        if(server_available[i] && server_next_error[i] <= current_time)
+        {
+            server_available[i] = false;
+            server_next_error[i] = TTR*N_SLOT + TTR;    // next error never happens
+            server_recover_time[i] = current_time + F_DURATION;
+        }
+        if(!server_available[i] && server_recover_time[i] <= current_time)
+        {    
+            server_available[i] = true;
+            server_recover_time[i] = 0;
+        }
+    }
 }
 
 /**

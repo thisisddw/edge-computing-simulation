@@ -67,7 +67,7 @@ protected:
     */
     Action make_action()
     {
-        integrity_check();
+        WHEN_DEBUG(integrity_check());
 
         Action a;
         for(auto s: sending)
@@ -82,7 +82,7 @@ protected:
     */
     void update(Feedback fb)
     {
-        integrity_check();
+        WHEN_DEBUG(integrity_check());
 
         memcpy(server_available, fb.a, sizeof(server_available));
 
@@ -92,6 +92,7 @@ protected:
             it->sent_bits += fb.r[it->server_id] * TTR;
             if(!fb.a[it->server_id])    // in case the server is broken
             {
+                WHEN_DEBUG(fprintf(stderr, "\rAgent%d sending instance interrupt due to failure on server%d   \n", id, it->server_id););
                 it->instance_ptr->state = Instance::A;
                 it = sending.erase(it);
             }
@@ -108,6 +109,7 @@ protected:
         {
             if(!fb.a[it->server_id])    // in case the server is broken
             {
+                WHEN_DEBUG(fprintf(stderr, "\rAgent%d executing instance interrupt due to failure on server%d   \n", id, it->server_id););
                 it->instance_ptr->state = Instance::A;
                 it = pending.erase(it);
             }

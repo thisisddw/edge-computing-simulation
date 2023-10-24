@@ -23,7 +23,7 @@ struct Point2D {
 Point2D user_location[N_USER], bs_location[N_BS];
 JobLoader job_loader(JOB_PATH);
 bool server_available[N_BS];
-double server_recover_time[N_BS];
+double server_recover_time[N_BS], server_next_error[N_BS];
 
 double path_loss[N_USER][N_BS];
 double channelgains_matrix[N_USER][N_BS];
@@ -50,7 +50,11 @@ void global_initialize()
 
     for(int i = 0; i < N_BS; i++)
         server_available[i] = true,
-        server_recover_time[i] = 0;
+        server_recover_time[i] = 0,
+        server_next_error[i] = N_SLOT * TTR + TTR;
+
+    // in case only one failure happens
+    server_next_error[F_ID] = F_TIME;
 
     current_time = 0;
 }
