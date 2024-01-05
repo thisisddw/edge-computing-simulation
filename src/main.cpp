@@ -9,6 +9,7 @@
 #include "common.h"
 #include "matplotlibcpp.h"
 #include "experiments/randomexp.h"
+#include "experiments/greedyexp.h"
 #include "experiments/report.h"
 
 namespace plt = matplotlibcpp;
@@ -23,6 +24,7 @@ int main()
 
     vector<Experiment *> exps = {
         new RandomExperiment(),
+        new GreedyExperiment(),
     };
 
     main_loop(exps);
