@@ -12,13 +12,13 @@
 
 /*flags*/
 
-#define DEBUG
+// #define DEBUG
 #define FAILURE_ON      // comment out this line to disable server failure
 
 /*environment settings*/
 
-#define N_USER 2        // number of users
-#define N_BS 4          // number of BS
+#define N_USER 4        // number of users
+#define N_BS 9          // number of BS
 #define RANGE 20        // users and BSs are scattered in [0,RANGE]*[0,RANGE]
 
 #define RICIAN_K 3.981  // K factor of Rician channel    10^0.6
@@ -33,14 +33,13 @@
 
 /*server settings*/
 
-#define F_ID 0          // server F_ID fails during simulation
-#define F_TIME 5        // the failure happens at F_TIME
+#define F_INTERVAL 30   // average interval between failures
 #define F_DURATION 5.0  // the failure lasts F_DURATION seconds
 
 /*simulation settings*/
 
-#define RANDOM_SEED 2011421         //(time(NULL))
-#define N_SLOT 20000                // number of time slots
+#define RANDOM_SEED 2011421         // set to (time(NULL)) to induce undeterministic behavior
+#define N_SLOT 60000                // number of time slots
 #define TTR 1e-3                    // time of one transmit frame
 #define RESULT_PATH "./result/"     // path to store any result files
 

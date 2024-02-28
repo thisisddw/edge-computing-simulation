@@ -9,21 +9,22 @@
  */
 
 
+#include <math.h>
+#include <vector>
+#include "basictypes.h"
 #include "parameters.h"
 #include "job.h"
-#include <math.h>
 
 #define SQ(x) (x)*(x)
 extern double uniform_real(double a, double b);
+extern double exponential(double lambda);
 
-struct Point2D {
-    double x;
-    double y;
-};
 Point2D user_location[N_USER], bs_location[N_BS];
 JobLoader job_loader(JOB_PATH);
+
 bool server_available[N_BS];
 double server_recover_time[N_BS], server_next_error[N_BS];
+std::vector<FailureRecord> server_failure_histroy;
 
 double path_loss[N_USER][N_BS];
 double channelgains_matrix[N_USER][N_BS];
@@ -53,8 +54,9 @@ void global_initialize()
         server_recover_time[i] = 0,
         server_next_error[i] = N_SLOT * TTR + TTR;
 
-    // in case only one failure happens
-    server_next_error[F_ID] = F_TIME;
+    // set first failure time of each server
+    for(int i = 0; i < N_BS; i++)
+        server_next_error[i] = exponential(1.0/F_INTERVAL);
 
     current_time = 0;
 }

@@ -80,8 +80,7 @@ void report(const char *path, vector<Experiment *> exps)
     MAKE_ROW(W_SUB, "bandwidth");
     MAKE_ROW(P_MAX, "max transmission power");
     MAKE_ROW(N_LINK, "max number of established links of an agent");
-    MAKE_ROW(F_ID, "server F_ID fails during simulation");
-    MAKE_ROW(F_TIME, "the failure happens at F_TIME");
+    MAKE_ROW(F_INTERVAL, "average interval between failures");
     MAKE_ROW(F_DURATION, "the failure lasts F_DURATION seconds");
     MAKE_ROW(N_SLOT, "number of time slots");
     MAKE_ROW(TTR, "time of one transmit frame");
@@ -90,6 +89,18 @@ void report(const char *path, vector<Experiment *> exps)
 
     fprintf(f, "### locations of users and base stations\n\n");
     fprintf(f, "![location](location.png)\n\n");
+
+    fprintf(f, "### server failures\n\n");
+    fprintf(f, "| server id | start (s) | end (s) | duration (s) |\n");
+    fprintf(f, "|-----------|-----------|---------|--------------|\n");
+    std::sort(server_failure_histroy.begin(), server_failure_histroy.end(), 
+    [](FailureRecord x, FailureRecord y)->bool {
+        if(x.sid != y.sid) return x.sid < y.sid;
+        return x.start < y.start;
+    });
+    for(FailureRecord r: server_failure_histroy)
+        fprintf(f, "|%d|%.3lf|%.3lf|%.3lf|\n", r.sid, r.start, r.end, r.duration);
+    fprintf(f, "\n");
 
     // section 2
     fprintf(f, "## Experiment Results\n\n");

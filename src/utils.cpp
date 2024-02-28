@@ -42,7 +42,7 @@ double uniform_real(double a, double b)
 /**
  * @param lambda Expected value is lambda^-1
 */
-double exponential_distribution(double lambda)
+double exponential(double lambda)
 {
     std::exponential_distribution<double> exponentialDist(lambda);
     return exponentialDist(generator);
@@ -68,8 +68,10 @@ void server_state_update()
         if(server_available[i] && server_next_error[i] <= current_time)
         {
             server_available[i] = false;
-            server_next_error[i] = TTR*N_SLOT + TTR;    // next error never happens
             server_recover_time[i] = current_time + F_DURATION;
+            server_next_error[i] = server_recover_time[i] + exponential(1.0/F_INTERVAL);
+            server_failure_histroy.push_back({i, current_time, server_recover_time[i], server_recover_time[i] - current_time});
+            WHEN_DEBUG(printf("\rBS %d failure: [%.3lf, %.3lf] \n", i, current_time, server_recover_time[i]);)
         }
         if(!server_available[i] && server_recover_time[i] <= current_time)
         {    
