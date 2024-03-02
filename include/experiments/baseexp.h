@@ -23,6 +23,11 @@ protected:
         for(int i = 0; i < N_USER; i++)
             tracker[i].track(feedbacks[i]);
     }
+    void tracker_setup()
+    {
+        for(int i = 0; i < N_USER; i++)
+            tracker[i].set_agent(agents[i]);
+    }
 public:
     BaseExperiment(const char *name) : Experiment(name) {}
 
@@ -63,7 +68,7 @@ public:
         AgentSummary total = {};
         for(int i = 0; i < N_USER; i++)
         {
-            string aname = sname + ": agent" + std::to_string(i);
+            string aname = "agent" + std::to_string(i);
             s[aname] = tracker[i].summarize();
 
             total.gross_trans += s[aname].gross_trans;

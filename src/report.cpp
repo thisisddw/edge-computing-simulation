@@ -63,6 +63,9 @@ void report(const char *path, vector<Experiment *> exps)
 #ifdef FAILURE_ON
     fprintf(f, " - FAILURE_ON\n");
 #endif
+#ifdef PLOT_AGENT
+    fprintf(f, " - PLOT_AGENT\n");
+#endif
     fprintf(f, "\n");
 
     // section 1
@@ -104,13 +107,20 @@ void report(const char *path, vector<Experiment *> exps)
 
     // section 2
     fprintf(f, "## Experiment Results\n\n");
+
+    // fprintf(f, "|terms|description|\n");
+    // fprintf(f, "|-----|-----------|\n");
+    // fprintf(f, "|GTR (gross transmission rate)| average transmission rate|\n");
+    // fprintf(f, "|ATR (actual transmission rate)| (total size of executed instances) / time|\n");
+    // fprintf(f, "|NEI (number of executed instances)| number of executed instances |\n\n");
+
     // each experiment has a subsection
     for(Experiment *e: exps)
     {
         fprintf(f, "### %s\n\n", e->get_name());
 
         ExpSummary s = ((BaseExperiment *)e)->summarize();
-        fprintf(f, "|   |gross trans rate|actual trans rate|instances executed|\n");
+        fprintf(f, "|   |gross transmission rate|actual transmission rate|number of executed instances|\n");
         fprintf(f, "|---|----------------|-----------------|------------------|\n");
         for(auto &it: s)
         {
@@ -119,12 +129,14 @@ void report(const char *path, vector<Experiment *> exps)
         }
         fprintf(f, "\n");
 
+    #ifdef PLOT_AGENT
         auto imgs = ((BaseExperiment *)e)->plot_save_agents(path);
         for(auto img: imgs)
         {
             fprintf(f, "![](%s)\n", img.c_str());
         }
         fprintf(f, "\n");
+    #endif
     }
 
     fclose(f);

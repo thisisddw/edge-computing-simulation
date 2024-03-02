@@ -1,8 +1,9 @@
 TARGET_EXEC := simulator
 
-BUILD_DIR := ./build
 SRC_DIR := ./src
 INCLUDE_DIR := ./include
+BUILD_DIR := ./build
+RESULT_DIR := ./result
 
 SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 SRCS := $(SRCS:$(SRC_DIR)/%=%)
@@ -24,5 +25,6 @@ run: $(BUILD_DIR)/$(TARGET_EXEC)
 
 clean:
 	-@rm $(BUILD_DIR)/*.o $(BUILD_DIR)/$(TARGET_EXEC)
+	-@rm $(RESULT_DIR)/*.png $(RESULT_DIR)/*.md
 
 .PHONY: run clean

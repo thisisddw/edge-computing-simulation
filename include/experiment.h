@@ -17,7 +17,7 @@
 
 class Experiment {
 private:
-    const char *name;
+    string name;
 
 protected:
     Agent *agents[N_USER];
@@ -32,11 +32,13 @@ protected:
     */
     virtual void track() {};
 
+    void set_name(string new_name) { name = new_name; }
+
 public:
     Experiment(const char *name) : name(name) {}
     virtual ~Experiment() {}
 
-    const char *get_name() { return name; }
+    const char *get_name() { return name.c_str(); }
 
     /**
      * @brief Interact with agents under current global state. Should be
