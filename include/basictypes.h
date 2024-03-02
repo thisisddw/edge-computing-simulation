@@ -10,6 +10,14 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+#include <map>
+
+using std::string;
+using std::vector;
+using std::map;
+
 /**
  * @brief Serve as coordinates of user and BS.
 */
@@ -27,3 +35,17 @@ struct FailureRecord {
     double end;
     double duration;
 };
+
+/**
+ * @brief Statistical summary of agents
+*/
+struct AgentSummary {
+    double gross_trans;       // average transmission rate
+    double actual_trans;    // (total size of executed instances) / time
+    double inst_done;       // number of executed instances
+};
+
+/**
+ * @brief Summary of experiments, including summary of each agent and total numbers
+*/
+typedef map<string, AgentSummary> ExpSummary;

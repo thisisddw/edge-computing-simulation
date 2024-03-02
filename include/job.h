@@ -120,7 +120,7 @@ public:
     {
         // should load jobs from a config file instead
 
-        int n_instances = 200, duration = 2, size = 2e6;
+        int n_instances = 400, duration = 2, size = 2e6;
         Task t;
         t.instances.push_back(Instance(duration, size));
         Job j;

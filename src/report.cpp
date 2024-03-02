@@ -107,8 +107,19 @@ void report(const char *path, vector<Experiment *> exps)
     // each experiment has a subsection
     for(Experiment *e: exps)
     {
-        auto imgs = ((BaseExperiment *)e)->plot_save_agents(path);
         fprintf(f, "### %s\n\n", e->get_name());
+
+        ExpSummary s = ((BaseExperiment *)e)->summarize();
+        fprintf(f, "|   |gross trans rate|actual trans rate|instances executed|\n");
+        fprintf(f, "|---|----------------|-----------------|------------------|\n");
+        for(auto &it: s)
+        {
+            fprintf(f, "|%s|%.2lf M|%.2lf M|%.0lf|\n", it.first.c_str(), 
+                it.second.gross_trans / 1e6, it.second.actual_trans / 1e6, it.second.inst_done);
+        }
+        fprintf(f, "\n");
+
+        auto imgs = ((BaseExperiment *)e)->plot_save_agents(path);
         for(auto img: imgs)
         {
             fprintf(f, "![](%s)\n", img.c_str());

@@ -72,4 +72,22 @@ public:
 
         plt::save(path);
     }
+    AgentSummary summarize()
+    {
+        AgentSummary s = {};
+
+        for(double r: trans_rate)
+            s.gross_trans += r;
+        s.gross_trans /= N_SLOT;
+
+        for(Task &t: agent->job.tasks)
+            for(Instance &i: t.instances)
+                if(i.is_done())
+                    s.actual_trans += i.size;
+        s.actual_trans /= N_SLOT * TTR;
+
+        s.inst_done = n_inst_done.back();
+
+        return s;
+    }
 };

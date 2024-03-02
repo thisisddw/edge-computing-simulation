@@ -13,7 +13,7 @@
 /*flags*/
 
 // #define DEBUG
-#define FAILURE_ON      // comment out this line to disable server failure
+// #define FAILURE_ON      // comment out this line to disable server failure
 
 /*environment settings*/
 

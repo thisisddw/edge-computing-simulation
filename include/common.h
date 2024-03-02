@@ -18,7 +18,6 @@
 #include <time.h>
 #include <random>
 #include <iostream>
-#include <string>
 #include <utility>
 #include <algorithm>
 #include "basictypes.h"
@@ -30,8 +29,6 @@
 #else
     #define WHEN_DEBUG(x)
 #endif
-
-using std::vector;
 
 extern struct Point2D user_location[N_USER], bs_location[N_BS];
 extern JobLoader job_loader;

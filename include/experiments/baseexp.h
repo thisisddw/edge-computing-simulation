@@ -50,4 +50,27 @@ public:
         }
         return ret;
     }
+
+    /**
+     * @brief Get statistiacal summary with AgentTracker::summarize().
+     * @return A map of AgentSummaries, with assigned agent name as keys and also
+     *          a special key "total" refer to the sums of each numbers.
+    */
+    ExpSummary summarize()
+    {
+        ExpSummary s;
+        std::string sname = std::string(get_name());
+        AgentSummary total = {};
+        for(int i = 0; i < N_USER; i++)
+        {
+            string aname = sname + ": agent" + std::to_string(i);
+            s[aname] = tracker[i].summarize();
+
+            total.gross_trans += s[aname].gross_trans;
+            total.actual_trans += s[aname].actual_trans;
+            total.inst_done += s[aname].inst_done;
+        }
+        s["total"] = total;
+        return s;
+    }
 };
