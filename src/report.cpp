@@ -120,7 +120,7 @@ void report(const char *path, vector<Experiment *> exps)
         fprintf(f, "### %s\n\n", e->get_name());
 
         ExpSummary s = ((BaseExperiment *)e)->summarize();
-        fprintf(f, "|   |gross transmission rate|actual transmission rate|number of executed instances|\n");
+        fprintf(f, "|   |gross trans rate|actual trans rate|instances executed|\n");
         fprintf(f, "|---|----------------|-----------------|------------------|\n");
         for(auto &it: s)
         {

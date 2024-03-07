@@ -12,9 +12,9 @@
 
 /*flags*/
 
-// #define DEBUG
+#define DEBUG
 // #define FAILURE_ON      // comment out this line to disable server failure
-// #define PLOT_AGENT      // set this flag to include detail chart of agents in report
+#define PLOT_AGENT      // set this flag to include detail chart of agents in report
 
 /*environment settings*/
 

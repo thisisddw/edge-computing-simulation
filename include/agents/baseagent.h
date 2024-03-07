@@ -19,6 +19,7 @@ class AgentTracker;
 class BaseAgent : public Agent {
 protected:
     const int id;
+    unsigned int n_link;
     Job job;
 
     struct SendingInstance {
@@ -56,7 +57,7 @@ protected:
     }
 
     #define integrity_check()\
-        assert(sending.size() <= N_LINK);\
+        assert(sending.size() <= n_link);\
         for(auto s: sending)\
             assert(s.instance_ptr->is_pending());\
         for(auto p: pending)\
@@ -71,7 +72,7 @@ protected:
 
         Action a;
         for(auto s: sending)
-            a.p[s.server_id] = P_MAX;
+            a.p[s.server_id] = P_MAX / sending.size();
 
         return a;
     }
@@ -92,7 +93,7 @@ protected:
             it->sent_bits += fb.r[it->server_id] * TTR;
             if(!fb.a[it->server_id])    // in case the server is broken
             {
-                WHEN_DEBUG(fprintf(stderr, "\rAgent%d sending instance interrupt due to failure on server%d   \n", id, it->server_id););
+                // WHEN_DEBUG(fprintf(stderr, "\rAgent%d sending instance interrupt due to failure on server%d   \n", id, it->server_id););
                 it->instance_ptr->state = Instance::A;
                 it = sending.erase(it);
             }
@@ -109,7 +110,7 @@ protected:
         {
             if(!fb.a[it->server_id])    // in case the server is broken
             {
-                WHEN_DEBUG(fprintf(stderr, "\rAgent%d executing instance interrupt due to failure on server%d   \n", id, it->server_id););
+                // WHEN_DEBUG(fprintf(stderr, "\rAgent%d executing instance interrupt due to failure on server%d   \n", id, it->server_id););
                 it->instance_ptr->state = Instance::A;
                 it = pending.erase(it);
             }
@@ -125,7 +126,7 @@ protected:
     #undef integrity_check
     
 public:
-    BaseAgent(int id) : id(id), job(job_loader.get_job(id)) 
+    BaseAgent(int id, int n_link = N_LINK) : id(id), n_link(n_link) , job(job_loader.get_job(id))
     {
         for(int i = 0; i < N_BS; i++)
             server_available[i] = true;

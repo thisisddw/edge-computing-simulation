@@ -10,13 +10,10 @@
 
 #pragma once
 
-#include "agents/baseagent.h"
+#include "agents/sentientagent.h"
 
-class GreedyAgent : public BaseAgent {
+class GreedyAgent : public SentientAgent {
 protected:
-    unsigned int estimation_turns;
-    double estimated_I[N_BS];  // estimated aggregate information
-
     virtual int choose_server(vector<int> server_list)
     {
         assert(!server_list.empty());
@@ -27,16 +24,12 @@ protected:
         return id;
     }
 public:
-    GreedyAgent(int id) : BaseAgent(id) 
-    {
-        estimation_turns = 0;
-        memset(estimated_I, 0, sizeof(estimated_I));
-    }
+    GreedyAgent(int id, int n_link = N_LINK) : SentientAgent(id, n_link) {}
 
     Action act() override
     {
         if(estimation_turns < 10) return make_action();
-        while(sending.size() < N_LINK)
+        while(sending.size() < n_link)
         {
             Instance *inst = job.get_available_instance();
             if(!inst) break;
@@ -53,12 +46,6 @@ public:
     void feedback(Feedback fb) override
     {
         update(fb);
-
-        const int A = 0.8;
-        for(int i = 0; i < N_BS; i++)
-            estimated_I[i] = A * estimated_I[i] + (1 - A) * fb.i[i];
-
-        estimation_turns++;
     }
 };
 

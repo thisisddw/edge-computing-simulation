@@ -36,3 +36,17 @@ public:
         tracker_setup();
     }
 };
+
+class MixExperiment1 : public BaseExperiment {
+public:
+    MixExperiment1() : BaseExperiment("mix-013-gready-2-eps-greedy")
+    {
+        assert(N_USER == 4);
+        agents[0] = new GreedyAgent(0);
+        agents[1] = new GreedyAgent(1);
+        agents[2] = new GreedyAgent(2, 1);
+        agents[3] = new GreedyAgent(3);
+
+        tracker_setup();
+    }
+};

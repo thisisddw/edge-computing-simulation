@@ -10,6 +10,7 @@
 #include "matplotlibcpp.h"
 #include "experiments/randomexp.h"
 #include "experiments/greedyexp.h"
+#include "experiments/adaptiveexp.h"
 #include "experiments/report.h"
 
 namespace plt = matplotlibcpp;
@@ -23,11 +24,14 @@ int main()
     // return 0;
 
     vector<Experiment *> exps = {
-        new RandomExperiment(),
+        // new RandomExperiment(),
         new GreedyExperiment(),
-        new EpsGreedyExperiment(0.05),
-        new EpsGreedyExperiment(0.1),
-        new EpsGreedyExperiment(0.2),
+        // new AdaptiveExperiment(),
+        new AdaptiveExperiment2(),
+        // new EpsGreedyExperiment(0.05),
+        // new EpsGreedyExperiment(0.1),
+        // new EpsGreedyExperiment(0.2),
+        // new MixExperiment1(),
     };
 
     main_loop(exps);
