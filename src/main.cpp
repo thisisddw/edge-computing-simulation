@@ -26,12 +26,14 @@ int main()
     vector<Experiment *> exps = {
         // new RandomExperiment(),
         new GreedyExperiment(),
-        // new AdaptiveExperiment(),
-        new AdaptiveExperiment2(),
         // new EpsGreedyExperiment(0.05),
         // new EpsGreedyExperiment(0.1),
         // new EpsGreedyExperiment(0.2),
         // new MixExperiment1(),
+        // new AdaptiveExperiment(),
+        // new AdaptiveExperiment2(),
+        new EGAdaptiveExperiment(),
+        new MixExperiment2(),
     };
 
     main_loop(exps);

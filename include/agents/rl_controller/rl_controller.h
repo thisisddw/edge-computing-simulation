@@ -20,7 +20,7 @@
 */
 class RlController {
 protected:
-    const int n_action;
+    const int n_action;     // action space is [0, n_action)
 public:
     RlController(int action_space_size) : n_action(action_space_size) {}
     virtual ~RlController() {};
