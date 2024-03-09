@@ -36,7 +36,7 @@ protected:
 
 public:
     Experiment(const char *name) : name(name) {}
-    virtual ~Experiment() {}
+    virtual ~Experiment() { for (Agent *a: agents) delete a; }
 
     const char *get_name() { return name.c_str(); }
 

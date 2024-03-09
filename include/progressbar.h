@@ -13,7 +13,7 @@
 #include "common.h"
 
 class ProgressBar {
-    #define GAP (CLOCKS_PER_SEC / 3)
+    #define GAP (CLOCKS_PER_SEC / 5)
     clock_t start_time, last_draw;
     const int width, length;
 

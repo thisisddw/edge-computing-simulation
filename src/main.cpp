@@ -39,11 +39,11 @@ int main()
     };
 
     main_loop(exps);
-
-    // for(Experiment *p: exps)
-    //     ((BaseExperiment *)p)->plot_save_agents(RESULT_PATH);
     
     report(RESULT_PATH, exps);
+
+    for(Experiment *p: exps)
+        delete p;
 
     return 0;
 }

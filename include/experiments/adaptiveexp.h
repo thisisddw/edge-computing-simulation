@@ -50,7 +50,7 @@ public:
     GBAdaptiveExperiment() : BaseExperiment("AdaptiveAgent-GradientBandit")
     {
         for(int i = 0; i < N_USER; i++)
-            agents[i] = new AdaptiveAgent(i, AdaptiveAgent::config(N_LINK, 0.1, new GradientBandit(N_LINK, 1e-6)));
+            agents[i] = new AdaptiveAgent(i, AdaptiveAgent::config(N_LINK, 0.1, new GradientBandit(N_LINK)));
         tracker_setup();
     }
 };
@@ -75,7 +75,7 @@ public:
         assert(N_USER == 4);
         agents[0] = new GreedyAgent(0);
         agents[1] = new GreedyAgent(1);
-        agents[2] = new AdaptiveAgent(2, AdaptiveAgent::config(N_LINK, 0.1, new GradientBandit(N_LINK, 1e-6)));
+        agents[2] = new AdaptiveAgent(2, AdaptiveAgent::config(N_LINK, 0.1, new GradientBandit(N_LINK)));
         agents[3] = new GreedyAgent(3);
         tracker_setup();
     }

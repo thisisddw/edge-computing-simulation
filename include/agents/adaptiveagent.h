@@ -15,7 +15,7 @@
 
 /**
  * @brief Agent controled by rl_controller. It should behave exactly same as GreedyAgent with
- * default argument values of constructer.
+ * default argument values of constructer. The controller would be destructed during destruction.
 */
 class AdaptiveAgent : public SentientAgent {
 public:
@@ -71,7 +71,7 @@ public:
     }
     ~AdaptiveAgent()
     {
-        if (!cfg.controller) delete controller;
+        delete controller;
     }
 
     Action act() override
