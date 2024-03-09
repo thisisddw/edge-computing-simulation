@@ -25,9 +25,9 @@
 #include "job.h"
 
 #ifdef DEBUG
-    #define WHEN_DEBUG(x) x
+    #define IF_DEBUG(x) x
 #else
-    #define WHEN_DEBUG(x)
+    #define IF_DEBUG(x)
 #endif
 
 extern struct Point2D user_location[N_USER], bs_location[N_BS];

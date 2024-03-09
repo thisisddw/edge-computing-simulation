@@ -19,8 +19,8 @@ class AgentTracker;
 class BaseAgent : public Agent {
 protected:
     const int id;
+    Job * const job;
     unsigned int n_link;
-    Job job;
 
     struct SendingInstance {
         Instance *instance_ptr;
@@ -68,7 +68,7 @@ protected:
     */
     Action make_action()
     {
-        WHEN_DEBUG(integrity_check());
+        IF_DEBUG(integrity_check());
 
         Action a;
         for(auto s: sending)
@@ -83,7 +83,7 @@ protected:
     */
     void update(Feedback fb)
     {
-        WHEN_DEBUG(integrity_check());
+        IF_DEBUG(integrity_check());
 
         memcpy(server_available, fb.a, sizeof(server_available));
 
@@ -93,8 +93,8 @@ protected:
             it->sent_bits += fb.r[it->server_id] * TTR;
             if(!fb.a[it->server_id])    // in case the server is broken
             {
-                // WHEN_DEBUG(fprintf(stderr, "\rAgent%d sending instance interrupt due to failure on server%d   \n", id, it->server_id););
-                it->instance_ptr->state = Instance::A;
+                // IF_DEBUG(fprintf(stderr, "\rAgent%d sending instance interrupt due to failure on server%d   \n", id, it->server_id););
+                it->instance_ptr->set_available();
                 it = sending.erase(it);
             }
             else if(it->sent_bits >= it->instance_ptr->size)
@@ -110,13 +110,13 @@ protected:
         {
             if(!fb.a[it->server_id])    // in case the server is broken
             {
-                // WHEN_DEBUG(fprintf(stderr, "\rAgent%d executing instance interrupt due to failure on server%d   \n", id, it->server_id););
-                it->instance_ptr->state = Instance::A;
+                // IF_DEBUG(fprintf(stderr, "\rAgent%d executing instance interrupt due to failure on server%d   \n", id, it->server_id););
+                it->instance_ptr->set_available();
                 it = pending.erase(it);
             }
             else if(it->finish_time <= current_time)
             {
-                it->instance_ptr->state = Instance::D;
+                it->instance_ptr->set_done();
                 it = pending.erase(it);
             }
             else
@@ -126,11 +126,12 @@ protected:
     #undef integrity_check
     
 public:
-    BaseAgent(int id, int n_link = N_LINK) : id(id), n_link(n_link) , job(job_loader.get_job(id))
+    BaseAgent(int id, int n_link = N_LINK) : id(id), job(job_loader.get_job(id)), n_link(n_link)
     {
         for(int i = 0; i < N_BS; i++)
             server_available[i] = true;
     }
+    virtual ~BaseAgent() { delete job; }
 
     friend class AgentTracker;
 };

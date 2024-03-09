@@ -12,7 +12,7 @@
 
 /*flags*/
 
-#define DEBUG
+#define DEBUG           // could make difference in performance
 // #define FAILURE_ON      // comment out this line to disable server failure
 #define PLOT_AGENT      // set this flag to include detail chart of agents in report
 

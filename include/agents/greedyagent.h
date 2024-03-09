@@ -31,14 +31,14 @@ public:
         if(estimation_turns < 10) return make_action();
         while(sending.size() < n_link)
         {
-            Instance *inst = job.get_available_instance();
+            Instance *inst = job->get_available_instance();
             if(!inst) break;
             vector<int> server_list = get_available_servers();
             if(server_list.empty()) break;
 
             int choice = choose_server(server_list);// the only difference with random agent
 
-            inst->state = Instance::P;              // have to set state to pending manually
+            inst->set_pending();                    // have to set state to pending manually
             sending.push_back({inst, choice, 0});   // inst_ptr, server_id, sent_bits
         }
         return make_action();

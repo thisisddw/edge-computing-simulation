@@ -71,7 +71,7 @@ void server_state_update()
             server_recover_time[i] = current_time + F_DURATION;
             server_next_error[i] = server_recover_time[i] + exponential(1.0/F_INTERVAL);
             server_failure_histroy.push_back({i, current_time, server_recover_time[i], server_recover_time[i] - current_time});
-            WHEN_DEBUG(printf("\rBS %d failure: [%.3lf, %.3lf] \n", i, current_time, server_recover_time[i]);)
+            IF_DEBUG(printf("\rBS %d failure: [%.3lf, %.3lf] \n", i, current_time, server_recover_time[i]);)
         }
         if(!server_available[i] && server_recover_time[i] <= current_time)
         {    

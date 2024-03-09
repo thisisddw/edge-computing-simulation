@@ -27,7 +27,7 @@ public:
     }
     void track(Feedback fb)
     {
-        n_inst_done.push_back(agent->job.number_instances_done());
+        n_inst_done.push_back(agent->job->number_instances_done());
         n_inst_sending.push_back(agent->sending.size());
         n_inst_executing.push_back(agent->pending.size());
         double r = 0;
@@ -80,10 +80,10 @@ public:
             s.gross_trans += r;
         s.gross_trans /= N_SLOT;
 
-        for(Task &t: agent->job.tasks)
-            for(Instance &i: t.instances)
-                if(i.is_done())
-                    s.actual_trans += i.size;
+        for(Task *t: agent->job->get_tasks())
+            for(Instance *i: t->get_instances())
+                if(i->is_done())
+                    s.actual_trans += i->size;
         s.actual_trans /= N_SLOT * TTR;
 
         s.inst_done = n_inst_done.back();

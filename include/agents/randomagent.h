@@ -20,13 +20,13 @@ public:
     {
         while(sending.size() < N_LINK)
         {
-            Instance *inst = job.get_available_instance();
+            Instance *inst = job->get_available_instance();
             if(!inst) break;
             vector<int> server_list = get_available_servers();
             if(server_list.empty()) break;
 
             int choice = server_list[rand() % server_list.size()];
-            inst->state = Instance::P;              // have to set state to pending manually
+            inst->set_pending();                    // have to set state to pending manually
             sending.push_back({inst, choice, 0});   // inst_ptr, server_id, sent_bits
         }
         return make_action();
