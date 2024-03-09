@@ -12,7 +12,7 @@
 
 #include "agents/rl_controller/rl_controller.h"
 
-class MultiarmedBandit : public RlController {
+class MultiarmedBandit : public SingleStateRlController {
 private:
     int last_action;
 protected:
@@ -29,7 +29,7 @@ protected:
 
 public:
     MultiarmedBandit(int action_space_size, double q_init_val = 1e8, double learning_rate = 0.1)
-     : RlController(action_space_size), lr(learning_rate)
+     : SingleStateRlController(action_space_size), lr(learning_rate)
     {
         last_action = -1;
         Q = new double[n_action];

@@ -112,7 +112,7 @@ public:
 
         if (last_ctl_upd + cfg.ctl_interval < current_time)
         {
-            controller->feedback(accumulated_reward / (current_time - last_ctl_upd) * cfg.ctl_interval);
+            controller->feedback(accumulated_reward / (current_time - last_ctl_upd) * cfg.ctl_interval, 0);
             n_link = controller->act() + 1;
 
             last_ctl_upd = current_time;
