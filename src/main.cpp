@@ -33,7 +33,9 @@ int main()
         // new AdaptiveExperiment(),
         // new AdaptiveExperiment2(),
         new EGAdaptiveExperiment(),
+        new GBAdaptiveExperiment(),
         new MixExperiment2(),
+        new MixExperiment3(),
     };
 
     main_loop(exps);

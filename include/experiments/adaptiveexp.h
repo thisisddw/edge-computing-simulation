@@ -45,6 +45,16 @@ public:
     }
 };
 
+class GBAdaptiveExperiment : public BaseExperiment {
+public:
+    GBAdaptiveExperiment() : BaseExperiment("AdaptiveAgent-GradientBandit")
+    {
+        for(int i = 0; i < N_USER; i++)
+            agents[i] = new AdaptiveAgent(i, AdaptiveAgent::config(N_LINK, 0.1, new GradientBandit(N_LINK, 1e-6)));
+        tracker_setup();
+    }
+};
+
 class MixExperiment2 : public BaseExperiment {
 public:
     MixExperiment2() : BaseExperiment("Mix2-013greedy-2EGMB")
@@ -53,6 +63,19 @@ public:
         agents[0] = new GreedyAgent(0);
         agents[1] = new GreedyAgent(1);
         agents[2] = new AdaptiveAgent(2, AdaptiveAgent::config(N_LINK, 0.1, new EpsGreedyMB(N_LINK, 0.1, 1e8 * 0.1)));
+        agents[3] = new GreedyAgent(3);
+        tracker_setup();
+    }
+};
+
+class MixExperiment3 : public BaseExperiment {
+public:
+    MixExperiment3() : BaseExperiment("Mix2-013greedy-2GB")
+    {
+        assert(N_USER == 4);
+        agents[0] = new GreedyAgent(0);
+        agents[1] = new GreedyAgent(1);
+        agents[2] = new AdaptiveAgent(2, AdaptiveAgent::config(N_LINK, 0.1, new GradientBandit(N_LINK, 1e-6)));
         agents[3] = new GreedyAgent(3);
         tracker_setup();
     }
