@@ -15,10 +15,11 @@
 
 class GreedyExperiment : public BaseExperiment {
 public:
-    GreedyExperiment() : BaseExperiment("greedy")
+    GreedyExperiment(int n_link = 3) : BaseExperiment("greedy")
     {
+        set_name("greedy-" + std::to_string(n_link) + "links");
         for(int i = 0; i < N_USER; i++)
-            agents[i] = new GreedyAgent(i);
+            agents[i] = new GreedyAgent(i, n_link);
         tracker_setup();
     }
 };

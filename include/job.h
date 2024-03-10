@@ -171,7 +171,7 @@ class JobLoader {
 private:
     Job jobs[N_USER];
 
-    Job *creat_fake_job()
+    Job *create_fake_job()
     {
         int n_instances = 4000, duration = 2, size = 2e6;
         Job *j = new Job();
@@ -191,6 +191,6 @@ public:
     Job *get_job(int id)
     {
         // should load jobs from a config file instead
-        return creat_fake_job();
+        return create_fake_job();
     }
 };
