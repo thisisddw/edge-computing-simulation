@@ -25,8 +25,8 @@ int main()
 
     vector<Experiment *> exps = {
         // new RandomExperiment(),
-        new GreedyExperiment(1),
-        new GreedyExperiment(2),
+        // new GreedyExperiment(1),
+        // new GreedyExperiment(2),
         new GreedyExperiment(3),
         // new EpsGreedyExperiment(0.05),
         // new EpsGreedyExperiment(0.1),
@@ -36,6 +36,10 @@ int main()
         // new AdaptiveExperiment2(),
         new EGAdaptiveExperiment(),
         new GBAdaptiveExperiment(),
+        new TD1sAdaptiveExperiment(1),
+        new TD2sAdaptiveExperiment(1),
+        new Bandit2sExperiment("eps-greedy"),
+        new Bandit2sExperiment("gradient"),
         // new MixExperiment2(),
         // new MixExperiment3(),
     };

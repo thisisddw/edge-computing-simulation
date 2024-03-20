@@ -38,6 +38,36 @@ protected:
 
         estimation_turns++;
     }
+    
+    // virtual Action make_action() override
+    // {
+    //     IF_DEBUG(integrity_check());
+
+    //     Action a;
+    //     for(auto s: sending)
+    //         a.p[s.server_id] = P_MAX / sending.size();
+
+    // #define RATE_INC(sid) (log2(1 + estimated_I[sid] * (a.p[sid] + P_MAX/n)) - log2(1 + estimated_I[sid] * a.p[sid])) 
+
+    //     int n = sending.size() * 3;
+    //     for (int i = 0; i < n; i++)
+    //     {
+    //         int id = 0, sid = sending[id].server_id;
+    //         double val = RATE_INC(sid);
+    //         for (int i = 0; i < (int)sending.size(); i++)
+    //         {
+    //             int t = sending[i].server_id;
+    //             double inc = RATE_INC(t);
+    //             if (inc > val)
+    //                 id = i, sid = t, val = inc;
+    //         }
+    //         a.p[sid] += P_MAX / n;
+    //     }
+
+    // #undef RATE_INC
+
+    //     return a;
+    // }
 
 public:
     SentientAgent(int id, int n_link = N_LINK) : BaseAgent(id, n_link)

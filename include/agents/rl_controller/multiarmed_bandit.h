@@ -28,7 +28,7 @@ protected:
     }
 
 public:
-    QbasedMultiarmedBandit(int action_space_size, double q_init_val = 1e8, double learning_rate = 0.1)
+    QbasedMultiarmedBandit(int action_space_size, double q_init_val = 0, double learning_rate = 0.1)
      : SingleStateRlController(action_space_size), lr(learning_rate)
     {
         last_action = -1;
@@ -48,7 +48,7 @@ public:
 class EpsGreedyMB : public QbasedMultiarmedBandit {
     const double eps;
 public:
-    EpsGreedyMB(int action_space_size, double eps = 0.1, double q_init_val = 1e8, double learning_rate = 0.1)
+    EpsGreedyMB(int action_space_size, double eps = 0.1, double q_init_val = 0, double learning_rate = 0.1)
      : QbasedMultiarmedBandit(action_space_size, q_init_val, learning_rate) , eps(eps) {}
 
     int act() override
@@ -143,5 +143,49 @@ public:
         double t = std::min(1., clip / max_g); if (t < 1) cnt_clip++;
         for (int i = 0; i < n_action; i++)
             h[i] += g[i] * t;
+    }
+};
+
+class MultiStateBandit final : public RlController {
+    SingleStateRlController **bandit;
+public:
+    /**
+     * @brief This class assembles a bunch of SingleStateRlControllers, each of which
+     * is in charge of handling one state, working separately.
+     * 
+     * @param method "eps-greedy" or "gradient"
+     * @param eps only for "eps-greedy"
+     * @param q_init_val only for "eps-greedy"
+     * @param clip only for "gradient"
+    */
+    MultiStateBandit(int action_space_size, int state_space_size, const char *method = "eps-greedy", 
+        int init_state = 0, double learning_rate = 1, double eps = 0.1, double q_init_val = 0, double clip = 0.1)
+        : RlController(action_space_size, state_space_size, init_state)
+    {
+        bandit = new SingleStateRlController *[n_state];
+        if (strcmp(method, "eps-greedy") == 0)
+            for (int i = 0; i < n_state; i++)
+                bandit[i] = new EpsGreedyMB(action_space_size, eps, q_init_val, learning_rate);
+        else if (strcmp(method, "gradient") == 0)
+            for (int i = 0; i < n_state; i++)
+                bandit[i] = new GradientBandit(action_space_size, learning_rate, clip);
+        else
+        {
+            fprintf(stderr, "MultiStateBandit: unknown method parameter\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+    ~MultiStateBandit()
+    {
+        for (int i = 0; i < n_state; i++)
+            delete bandit[i];
+        delete[] bandit;
+    }
+
+    int act() override { return bandit[state]->act(); }
+    void feedback(double reward, int next_state) override
+    {
+        bandit[state]->feedback(reward);
+        state = next_state;
     }
 };

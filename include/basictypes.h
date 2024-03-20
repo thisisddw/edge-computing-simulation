@@ -17,6 +17,7 @@
 using std::string;
 using std::vector;
 using std::map;
+using std::pair;
 
 /**
  * @brief Serve as coordinates of user and BS.

@@ -66,7 +66,7 @@ protected:
     /**
      * @brief Make action according to sending instances.
     */
-    Action make_action()
+    virtual Action make_action()
     {
         IF_DEBUG(integrity_check());
 

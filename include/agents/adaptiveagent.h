@@ -24,12 +24,21 @@ public:
         int init_number_link;           // to initialize BaseAgent::n_link
         double ctl_interval;            // interval between two controller actions
         RlController *controller;      // to control BaseAgent::n_link
+        /**
+         * state_policy is called to determine the current state.
+         * It accepts 3 params: int n_link, double *estimated_I, Feedback fb
+        */
+        int (*state_policy)(int, double *, Feedback);
     
-        config(int init_number_link, double ctl_interval, RlController *controller)
+        config( int init_number_link = N_LINK, 
+                double ctl_interval = 0.1, 
+                RlController *controller = NULL, 
+                int (*state_policy)(int, double *, Feedback) = AdaptiveAgent::single_state)
         {
             this->init_number_link = init_number_link;
             this->ctl_interval = ctl_interval;
             this->controller = controller;
+            this->state_policy = state_policy;
         }
     };
 
@@ -60,7 +69,7 @@ protected:
     }
 
 public:
-    AdaptiveAgent(int id, config cfg = config(N_LINK, 0.1, NULL))
+    AdaptiveAgent(int id, config cfg = config())
      : SentientAgent(id, cfg.init_number_link), cfg(cfg), controller(cfg.controller)
     {
         if (!cfg.controller)
@@ -72,6 +81,22 @@ public:
     ~AdaptiveAgent()
     {
         delete controller;
+    }
+
+    /**
+     * only state 0 is used
+    */
+    static int single_state(int n_link, double *estimated_I, Feedback fb) { return 0; }
+    /**
+     * two states are used, state 0 when every server works normally, state 1 when some server failure
+     * is taking place
+    */
+    static int double_state(int n_link, double *estimated_I, Feedback fb)
+    {
+        for (int i = 0; i < N_BS; i++)
+            if (!fb.a[i])
+                return 1;   // some server fails
+        return 0;           // every server works well
     }
 
     Action act() override
@@ -112,7 +137,8 @@ public:
 
         if (last_ctl_upd + cfg.ctl_interval < current_time)
         {
-            controller->feedback(accumulated_reward / (current_time - last_ctl_upd) * cfg.ctl_interval, 0);
+            controller->feedback(accumulated_reward / (current_time - last_ctl_upd) * cfg.ctl_interval, 
+                cfg.state_policy(n_link, estimated_I, fb));
             n_link = controller->act() + 1;
 
             last_ctl_upd = current_time;

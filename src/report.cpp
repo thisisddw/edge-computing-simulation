@@ -63,6 +63,9 @@ void report(const char *path, vector<Experiment *> exps)
 #ifdef FAILURE_ON
     fprintf(f, " - FAILURE_ON\n");
 #endif
+#ifdef FAILURE_DETAIL
+    fprintf(f, " - FAILURE_DETAIL\n");
+#endif
 #ifdef PLOT_AGENT
     fprintf(f, " - PLOT_AGENT\n");
 #endif
@@ -94,6 +97,8 @@ void report(const char *path, vector<Experiment *> exps)
     fprintf(f, "![location](location.png)\n\n");
 
     fprintf(f, "### server failures\n\n");
+
+#ifdef FAILURE_DETAIL
     fprintf(f, "| server id | start (s) | end (s) | duration (s) |\n");
     fprintf(f, "|-----------|-----------|---------|--------------|\n");
     std::sort(server_failure_histroy.begin(), server_failure_histroy.end(), 
@@ -104,6 +109,7 @@ void report(const char *path, vector<Experiment *> exps)
     for(FailureRecord r: server_failure_histroy)
         fprintf(f, "|%d|%.3lf|%.3lf|%.3lf|\n", r.sid, r.start, r.end, r.duration);
     fprintf(f, "\n");
+#endif
 
     // section 2
     fprintf(f, "## Experiment Results\n\n");
