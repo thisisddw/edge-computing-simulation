@@ -19,6 +19,12 @@
 */
 class AdaptiveAgent : public SentientAgent {
 public:
+    class StatePolicy {
+    public:
+        virtual ~StatePolicy() {};
+        virtual int get_state(int, double *, Feedback) = 0;
+    };
+
     class config {
     public:    
         int init_number_link;           // to initialize BaseAgent::n_link
@@ -28,12 +34,12 @@ public:
          * state_policy is called to determine the current state.
          * It accepts 3 params: int n_link, double *estimated_I, Feedback fb
         */
-        int (*state_policy)(int, double *, Feedback);
+        StatePolicy *state_policy;
     
         config( int init_number_link = N_LINK, 
                 double ctl_interval = 0.1, 
                 RlController *controller = NULL, 
-                int (*state_policy)(int, double *, Feedback) = AdaptiveAgent::single_state)
+                StatePolicy *state_policy = new AdaptiveAgent::SingleState())
         {
             this->init_number_link = init_number_link;
             this->ctl_interval = ctl_interval;
@@ -81,23 +87,84 @@ public:
     ~AdaptiveAgent()
     {
         delete controller;
+        delete cfg.state_policy;
     }
 
     /**
      * only state 0 is used
     */
-    static int single_state(int n_link, double *estimated_I, Feedback fb) { return 0; }
+    class SingleState : public StatePolicy { 
+        public: int get_state(int n_link, double *estimated_I, Feedback fb) override { return 0; } 
+    };
     /**
      * two states are used, state 0 when every server works normally, state 1 when some server failure
      * is taking place
     */
-    static int double_state(int n_link, double *estimated_I, Feedback fb)
-    {
-        for (int i = 0; i < N_BS; i++)
-            if (!fb.a[i])
-                return 1;   // some server fails
-        return 0;           // every server works well
-    }
+    class DoubleState : public StatePolicy { 
+    public: 
+        int get_state(int n_link, double *estimated_I, Feedback fb) override
+        {
+            for (int i = 0; i < N_BS; i++)
+                if (!fb.a[i])
+                    return 1;   // some server fails
+            return 0;           // every server works well
+        }
+    };
+    /**
+     * 
+    */
+    class AvgLinkStatus3State : public StatePolicy { 
+        const double lr;
+        bool initialized;
+        double mean;
+        double s2;
+
+        int cnt[3];
+
+        #define SQ(x) ((x)*(x))
+
+    public: 
+        // perhaps it's better to set a lower lr than the controller
+        AvgLinkStatus3State(double lr) : StatePolicy(), lr(lr), initialized(false) 
+        { 
+            cnt[0] = cnt[1] = cnt[2] = 0;
+        }
+        ~AvgLinkStatus3State()
+        {
+            fprintf(stderr, "~AvgLinkStatus3State(): cnt[medium, bad, good] = [%d, %d, %d]\n", cnt[0], cnt[1], cnt[2]);
+        }
+        
+        int get_state(int n_link, double *estimated_I, Feedback fb) override
+        {
+            double val = 0;
+            for (int i = 0; i < N_BS; i++)
+                // val += estimated_I[i];
+                if (fb.a[i])
+                    val = std::max(val, estimated_I[i]);
+            // val /= N_BS;
+            
+            if (!initialized)
+            {
+                mean = val;
+                s2 = SQ(0.5 * mean);
+                initialized = true;
+            }
+
+            double s = sqrt(s2), t = 0.3 * s;
+            int state = val > mean - t && val < mean + t ? 0      // medium link status
+                                        : val <= mean - t ? 1     // bad link status
+                                                          : 2;    // good link status
+            cnt[state]++;
+
+            // update estimation
+            s2 += lr * (SQ(val - mean) - s2);
+            mean += lr * (val - mean);
+
+            return state;
+        }
+
+        #undef SQ
+    };
 
     Action act() override
     {
@@ -138,7 +205,7 @@ public:
         if (last_ctl_upd + cfg.ctl_interval < current_time)
         {
             controller->feedback(accumulated_reward / (current_time - last_ctl_upd) * cfg.ctl_interval, 
-                cfg.state_policy(n_link, estimated_I, fb));
+                cfg.state_policy->get_state(n_link, estimated_I, fb));
             n_link = controller->act() + 1;
 
             last_ctl_upd = current_time;

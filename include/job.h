@@ -173,7 +173,7 @@ private:
 
     Job *create_fake_job()
     {
-        int n_instances = 4000, duration = 2, size = 2e6;
+        int n_instances = 4000*5, duration = 2, size = 2e6;
         Job *j = new Job();
         Task *t = new Task();
         while(n_instances--)

@@ -12,14 +12,17 @@
 
 #include "experiment.h"
 #include "agents/tracker.h"
+#include "experiments/tracker.h"
 #include "matplotlibcpp.h"
 
 class BaseExperiment : public Experiment {
 protected:
+    ExpTracker exp_tracker;
     AgentTracker tracker[N_USER];
 
     void track() override
     {
+        exp_tracker.track();
         for(int i = 0; i < N_USER; i++)
             tracker[i].track(feedbacks[i]);
     }
@@ -29,7 +32,7 @@ protected:
             tracker[i].set_agent(agents[i]);
     }
 public:
-    BaseExperiment(const char *name) : Experiment(name) {}
+    BaseExperiment(const char *name) : Experiment(name), exp_tracker(this) {}
 
     /**
      * @brief Plot each agent with AgentTracker::plot().
@@ -54,6 +57,16 @@ public:
             ret.push_back(sname + "-agent" + std::to_string(i) + ".png");
         }
         return ret;
+    }
+    /**
+     * @brief Plot and save overview stats of this experiment.
+     * @return A string of image name.
+    */
+    string plot_save(const char *path)
+    {
+        std::string sname = std::string(get_name());
+        exp_tracker.plot_save((path + sname + "-overview.png").c_str(), (sname + ": overview").c_str());
+        return sname + "-overview.png";
     }
 
     /**

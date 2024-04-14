@@ -135,6 +135,9 @@ void report(const char *path, vector<Experiment *> exps)
         }
         fprintf(f, "\n");
 
+        auto img1 = ((BaseExperiment *)e)->plot_save(path);
+        fprintf(f, "![](%s)\n\n", img1.c_str());
+
     #ifdef PLOT_AGENT
         auto imgs = ((BaseExperiment *)e)->plot_save_agents(path);
         for(auto img: imgs)

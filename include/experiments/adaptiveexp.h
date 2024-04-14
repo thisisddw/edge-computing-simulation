@@ -51,7 +51,7 @@ public:
     GBAdaptiveExperiment() : BaseExperiment("AdaptiveAgent-GradientBandit")
     {
         for(int i = 0; i < N_USER; i++)
-            agents[i] = new AdaptiveAgent(i, AdaptiveAgent::config(N_LINK, 0.1, new GradientBandit(N_LINK)));
+            agents[i] = new AdaptiveAgent(i, AdaptiveAgent::config(N_LINK, 0.1, new GradientBandit(N_LINK, 1, 0.1)));
         tracker_setup();
     }
 };
@@ -67,7 +67,7 @@ public:
             agents[i] = new AdaptiveAgent(i, 
                     AdaptiveAgent::config(N_LINK, 0.1, 
                         new TemporalDifference(N_LINK, 1, 0, 0.1, 1e8 * 0.1 * 10, 0.1, 0.9, n),
-                    AdaptiveAgent::single_state)
+                    new AdaptiveAgent::SingleState())
                 );
         tracker_setup();
     }
@@ -84,7 +84,24 @@ public:
             agents[i] = new AdaptiveAgent(i, 
                     AdaptiveAgent::config(N_LINK, 0.1, 
                         new TemporalDifference(N_LINK, 2, 0, 0.1, 1e8 * 0.1 * 10, 0.1, 0.9, n),
-                    AdaptiveAgent::double_state)
+                    new AdaptiveAgent::DoubleState())
+                );
+        tracker_setup();
+    }
+};
+
+class TDAvgLinkStatusExperiment : public BaseExperiment {
+public:
+    TDAvgLinkStatusExperiment(int n = 1) : BaseExperiment("")
+    {
+        char buf[100];
+        sprintf(buf, "AdaptiveAgent-avg_link_status-TD-%dstep", n);
+        set_name(buf);
+        for(int i = 0; i < N_USER; i++)
+            agents[i] = new AdaptiveAgent(i, 
+                    AdaptiveAgent::config(N_LINK, 0.1, 
+                        new TemporalDifference(N_LINK, 3, 0, 0.1, 1e8 * 0.1 * 10, 0.1, 0.9, n),
+                    new AdaptiveAgent::AvgLinkStatus3State(0.01))
                 );
         tracker_setup();
     }
@@ -100,8 +117,8 @@ public:
         for(int i = 0; i < N_USER; i++)
             agents[i] = new AdaptiveAgent(i, 
                     AdaptiveAgent::config(N_LINK, 0.1, 
-                        new MultiStateBandit(N_LINK, 2, method, 0, 1.0, 0.1, 1e8 * 0.1, 0.1),
-                    AdaptiveAgent::double_state)
+                        new MultiStateBandit(N_LINK, 2, method, 0, 0.1, 0.1, 1e8 * 0.1, 0.1),
+                    new AdaptiveAgent::DoubleState())
                 );
         tracker_setup();
     }

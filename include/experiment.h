@@ -66,4 +66,6 @@ public:
         
         track();
     }
+
+    friend class ExpTracker;
 };

@@ -68,6 +68,7 @@ class GradientBandit final : public SingleStateRlController {
     double avg_r, var_r;
     double *h, *p;
     int last_action;
+    int cnt_fb;
 
     int make_action(int a) { return last_action = a; }
     void compute_p()
@@ -87,6 +88,7 @@ public:
      : SingleStateRlController(action_space_size), lr(learning_rate), clip(clip)
     {
         last_action = -1;
+        cnt_fb = 0;
         h = new double[n_action];
         for(int i = 0; i < n_action; i++)
             h[i] = 0;
@@ -96,8 +98,8 @@ public:
         avg_g = 0;
     }
     ~GradientBandit() { delete[] h; delete[] p; 
-        // printf("\rGradientBandit: cnt_clip %d cnt_upd %d avg_g %lf avg_dif %lf var_r %lf \n",
-        //  cnt_clip, cnt_upd / n_action, avg_g, avg_dif, var_r);
+        printf("\rGradientBandit: cnt_clip %d cnt_upd %d avg_g %lf avg_dif %lf var_r %lf \n",
+         cnt_clip, cnt_upd / n_action, avg_g, avg_dif, var_r);
     }
 
     int act() override
@@ -113,12 +115,16 @@ public:
     }
     void feedback(double reward) override
     {
+        cnt_fb++;
+
         if (last_action == -1)
             avg_r = reward, var_r = 1, avg_dif = 0;
         else
         {
-            var_r += 0.1 * ((reward - avg_r) * (reward - avg_r) - var_r);
-            avg_r += 0.1 * (reward - avg_r);    // the ratio 0.1 may be changed
+            double t = cnt_fb < 10 ? 1.0 / cnt_fb : 0.1;
+            // double t = 1.0 / cnt_fb;
+            var_r += t * ((reward - avg_r) * (reward - avg_r) - var_r);
+            avg_r += t * (reward - avg_r);    // the ratio 0.1 may be changed
         }
   
         double dif = (reward - avg_r) / sqrt(var_r);
@@ -159,7 +165,7 @@ public:
      * @param clip only for "gradient"
     */
     MultiStateBandit(int action_space_size, int state_space_size, const char *method = "eps-greedy", 
-        int init_state = 0, double learning_rate = 1, double eps = 0.1, double q_init_val = 0, double clip = 0.1)
+        int init_state = 0, double learning_rate = 0.1, double eps = 0.1, double q_init_val = 0, double clip = 0.1)
         : RlController(action_space_size, state_space_size, init_state)
     {
         bandit = new SingleStateRlController *[n_state];
