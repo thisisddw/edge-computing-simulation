@@ -13,7 +13,7 @@
 /*flags*/
 
 // #define DEBUG           // could make considerable difference in performance
-// #define FAILURE_ON      // comment out this line to disable server failure
+#define FAILURE_ON      // comment out this line to disable server failure
 // #define FAILURE_DETAIL  // whether or not to create a table of each failure event in report
 // #define PLOT_AGENT      // set this flag to include detail chart of agents in report
 
@@ -41,7 +41,7 @@
 /*simulation settings*/
 
 #define RANDOM_SEED 2011421         // set to (time(NULL)) to induce undeterministic behavior
-#define N_SLOT (60000*3)            // number of time slots
+#define N_SLOT (1000*60)            // number of time slots
 #define TTR 1e-3                    // time of one transmit frame
 #define RESULT_PATH "./result/"     // path to store any result files
 

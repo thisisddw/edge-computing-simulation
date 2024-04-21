@@ -98,8 +98,8 @@ public:
         avg_g = 0;
     }
     ~GradientBandit() { delete[] h; delete[] p; 
-        printf("\rGradientBandit: cnt_clip %d cnt_upd %d avg_g %lf avg_dif %lf var_r %lf \n",
-         cnt_clip, cnt_upd / n_action, avg_g, avg_dif, var_r);
+        // printf("\rGradientBandit: cnt_clip %d cnt_upd %d avg_g %lf avg_dif %lf var_r %lf \n",
+        //  cnt_clip, cnt_upd / n_action, avg_g, avg_dif, var_r);
     }
 
     int act() override

@@ -52,5 +52,6 @@ vector<std::pair<double, double>> calculate_transmition_rates(double w, vector<d
 /*util functions for evironment*/
 
 void global_initialize();
+void server_initialize();
 void channelgains_update();
 void server_state_update();

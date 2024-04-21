@@ -35,6 +35,21 @@ public:
     BaseExperiment(const char *name) : Experiment(name), exp_tracker(this) {}
 
     /**
+     * @brief Create a dummy BaseExperiment with data of input exps.
+    */
+    static BaseExperiment *average(vector<BaseExperiment *> exps)
+    {
+        BaseExperiment *ret = new BaseExperiment(exps.back()->get_name());
+        for (int i = 0; i < N_USER; i++)
+            ret->tracker[i] = exps.back()->tracker[i];
+        vector<ExpTracker *> exp_trackers;
+        for (auto it: exps)
+            exp_trackers.push_back(&it->exp_tracker);
+        ret->exp_tracker = ExpTracker::average(exp_trackers);
+        return ret;
+    }
+
+    /**
      * @brief Plot each agent with AgentTracker::plot().
     */
     void plot_agents()

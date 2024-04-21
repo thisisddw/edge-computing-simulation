@@ -18,10 +18,40 @@ class ExpTracker {
     Experiment *exp;
 
 public:
-    vector<int> n_links, n_working_server;
+    vector<double> n_links, n_working_server;
     vector<double> tot_trans_rate;
 
     ExpTracker(Experiment *exp) : exp(exp) {}
+
+    /**
+     * @brief Create a dummy ExpTracker with data of input trackers.
+    */
+    static ExpTracker average(vector<ExpTracker *> trackers)
+    {
+        ExpTracker ret(NULL);
+        int n = trackers[0]->n_links.size();
+
+        #define COMPUTE(property) \
+            do {\
+                ret.property.resize(n, 0);\
+                for (int i = 0; i < n; i++)\
+                    for (ExpTracker *tracker: trackers)\
+                    {\
+                        assert(tracker->property.size() == (unsigned)n);\
+                        ret.property[i] += tracker->property[i];\
+                    }\
+                for (int i = 0; i < n; i++)\
+                    ret.property[i] /= trackers.size();\
+            } while(0)\
+
+        COMPUTE(n_links);
+        COMPUTE(n_working_server);
+        COMPUTE(tot_trans_rate);
+
+        #undef COMPUTE
+
+        return ret;
+    }
 
     void track()
     {

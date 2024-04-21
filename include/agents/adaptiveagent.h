@@ -81,7 +81,7 @@ public:
         if (!cfg.controller)
             this->controller = new TrivialController(n_link);
 
-        last_ctl_upd = current_time;
+        last_ctl_upd = -cfg.ctl_interval;
         accumulated_reward = 0;
     }
     ~AdaptiveAgent()

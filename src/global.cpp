@@ -49,6 +49,14 @@ void global_initialize()
             path_loss[i][j] = pow(sqrt(SQ(user_location[i].x - bs_location[j].x)
                 + SQ(user_location[i].y - bs_location[j].y)), -3.5);
 
+    current_time = 0;
+}
+
+/**
+ * @brief Initialize server state and set first failure time.
+*/
+void server_initialize()
+{
     for(int i = 0; i < N_BS; i++)
         server_available[i] = true,
         server_recover_time[i] = 0,
@@ -57,6 +65,4 @@ void global_initialize()
     // set first failure time of each server
     for(int i = 0; i < N_BS; i++)
         server_next_error[i] = exponential(1.0/F_INTERVAL);
-
-    current_time = 0;
 }

@@ -24,15 +24,18 @@ double TestAgent::dfs_state[N_BS], TestAgent::sump, TestAgent::n_bs;
 
 namespace plt = matplotlibcpp;
 
-extern void main_loop(vector<Experiment *> experiments);
+extern vector<Experiment *> main_loop(vector<Experiment *> (*exp_generator)(), int repeat);
 
 void perform_test()
 {
-    vector<Experiment *> exps = {
-        new TestExperiment1(),
-        new TestExperiment2(),
+    auto exp_generator = []() -> vector<Experiment *> {
+        vector<Experiment *> exps = {
+            new TestExperiment1(),
+            new TestExperiment2(),
+        };
+        return exps;
     };
-    main_loop(exps);
+    auto exps = main_loop(exp_generator, 1);
 
     for(int i = 0; i < (int)exps.size(); i++)
     {
