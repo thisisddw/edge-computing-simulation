@@ -24,6 +24,17 @@ public:
     }
 };
 
+class SecondaryGreedyExperiment : public BaseExperiment {
+public:
+    SecondaryGreedyExperiment(int n_link = 3) : BaseExperiment("greedy")
+    {
+        set_name("SecondaryGreedy-" + std::to_string(n_link) + "links");
+        for(int i = 0; i < N_USER; i++)
+            agents[i] = new SecondaryGreedyAgent(i, n_link);
+        tracker_setup();
+    }
+};
+
 class EpsGreedyExperiment : public BaseExperiment {
 public:
     EpsGreedyExperiment(double eps = 0.1) : BaseExperiment("eps-greedy")

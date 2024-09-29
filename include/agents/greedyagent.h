@@ -49,6 +49,53 @@ public:
     }
 };
 
+class SecondaryGreedyAgent : public SentientAgent {
+protected:
+    virtual int choose_server(vector<int> server_list)
+    {
+        assert(!server_list.empty());
+        // int id = -1;
+        // for(int s: server_list)
+        //     if(id == -1 || estimated_I[s] > estimated_I[id])
+        //         id = s;
+        // return id;
+        int max_id = -1, second_max_id = -1;
+        for(int s: server_list) {
+            if(max_id == -1 || estimated_I[s] > estimated_I[max_id]) {
+                second_max_id = max_id; 
+                max_id = s;          
+            } else if(second_max_id == -1 || estimated_I[s] > estimated_I[second_max_id]) {
+                second_max_id = s;  
+            }
+        }
+        return second_max_id;
+    }
+public:
+    SecondaryGreedyAgent(int id, int n_link = N_LINK) : SentientAgent(id, n_link) {}
+
+    Action act() override
+    {
+        if(estimation_turns < 10) return make_action();
+        while(sending.size() < n_link)
+        {
+            Instance *inst = job->get_available_instance();
+            if(!inst) break;
+            vector<int> server_list = get_available_servers();
+            if(server_list.empty()) break;
+
+            int choice = choose_server(server_list);// the only difference with random agent
+
+            inst->set_pending();                    // have to set state to pending manually
+            sending.push_back({inst, choice, 0});   // inst_ptr, server_id, sent_bits
+        }
+        return make_action();
+    }
+    void feedback(Feedback fb) override
+    {
+        update(fb);
+    }
+};
+
 /**
  * @brief A variety of GreedyAgent with epsilon-greedy strategy. Upon each decision,
  * it choose server randomly with a probability of epsilon, otherwise choose the one 

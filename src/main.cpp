@@ -25,18 +25,21 @@ int main()
 
     auto exp_generator = []() -> vector<Experiment *> {
         vector<Experiment *> exps = {
-            // new RandomExperiment(),
+            new RandomExperiment(),
             // new GreedyExperiment(1),
             // new GreedyExperiment(2),
-            new GreedyExperiment(3),
+            // new GreedyExperiment(3),
+            // new SecondaryGreedyExperiment(1),
+            // new SecondaryGreedyExperiment(2),
+            // new SecondaryGreedyExperiment(3),
             // new EpsGreedyExperiment(0.05),
             // new EpsGreedyExperiment(0.1),
             // new EpsGreedyExperiment(0.2),
             // new MixExperiment1(),
             // new AdaptiveExperiment(),
             // new AdaptiveExperiment2(),
-            new EGAdaptiveExperiment(),
-            new GBAdaptiveExperiment(),
+            // new EGAdaptiveExperiment(),
+            // new GBAdaptiveExperiment(),
             // new TD1sAdaptiveExperiment(1),
             // new TD2sAdaptiveExperiment(1),
             // new TDAvgLinkStatusExperiment(1),
@@ -48,7 +51,9 @@ int main()
         return exps;
     };
 
-    vector<Experiment *> exps = main_loop(exp_generator, 10);
+    vector<Experiment *> exps = main_loop(exp_generator, 1);
+
+    // fprintf(exps);
     
     report(RESULT_PATH, exps);
 

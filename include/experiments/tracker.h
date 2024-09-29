@@ -13,6 +13,7 @@
 #include "experiment.h"
 #include "matplotlibcpp.h"
 
+#include <fstream>
 
 class ExpTracker {
     Experiment *exp;
@@ -57,11 +58,21 @@ public:
     {
         int nl = 0, nws = 0;
         double ttr = 0;
+
+        // std::ofstream outFile("server_indices.txt");
+        std::ofstream outFile("./result/server_GE.txt", std::ios::app);
+        if (!outFile) {
+            std::cerr << "Error opening file for writing." << std::endl;
+            return;
+        }
+
         for (int i = 0; i < N_USER; i++)
             for (int j = 0; j < N_BS; j++)
                 nl += exp->actions[i].p[j] > 0,
+                // outFile << "User " << i << " connected to Server Index: " << j << "\n",
                 ttr += exp->feedbacks[i].r[j];
         for (int j = 0; j < N_BS; j++)
+            // outFile << "User " << j << " connected to Server: " << j << "\n",
             nws += exp->feedbacks[0].a[j];
         n_links.push_back(nl);
         n_working_server.push_back(nws);

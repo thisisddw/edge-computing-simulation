@@ -41,6 +41,9 @@ extern double path_loss[N_USER][N_BS];
 extern double channelgains_matrix[N_USER][N_BS];
 
 extern double current_time;
+extern int slot;
+
+extern std::string filenames[N_BS];
 
 /*math functions*/
 
@@ -53,5 +56,7 @@ vector<std::pair<double, double>> calculate_transmition_rates(double w, vector<d
 
 void global_initialize();
 void server_initialize();
+void new_server_initialize();
 void channelgains_update();
 void server_state_update();
+void new_server_state_update();

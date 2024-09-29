@@ -14,8 +14,8 @@
 
 // #define DEBUG           // could make considerable difference in performance
 #define FAILURE_ON      // comment out this line to disable server failure
-// #define FAILURE_DETAIL  // whether or not to create a table of each failure event in report
-// #define PLOT_AGENT      // set this flag to include detail chart of agents in report
+#define FAILURE_DETAIL  // whether or not to create a table of each failure event in report
+#define PLOT_AGENT      // set this flag to include detail chart of agents in report
 
 /*environment settings*/
 
@@ -36,7 +36,7 @@
 /*server settings*/
 
 #define F_INTERVAL 20   // average interval between failures
-#define F_DURATION 1.0  // the failure lasts F_DURATION seconds
+#define F_DURATION 0.01  // the failure lasts F_DURATION seconds
 
 /*simulation settings*/
 
