@@ -43,7 +43,15 @@ extern double channelgains_matrix[N_USER][N_BS];
 extern double current_time;
 extern int slot;
 
-extern std::string filenames[N_BS];
+struct Server_failure_slot {
+    int server_id;
+    std::vector<int> fault_time_slots; 
+    std::vector<int> cat_pred_fault_time_slots; 
+    std::vector<int> xgb_pred_fault_time_slots; 
+    std::vector<int> lgb_pred_fault_time_slots;
+};
+
+extern std::vector<Server_failure_slot> server_failure_slot_data;
 
 /*math functions*/
 
@@ -60,3 +68,4 @@ void new_server_initialize();
 void channelgains_update();
 void server_state_update();
 void new_server_state_update();
+void server_failure_initialize();

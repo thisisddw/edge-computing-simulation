@@ -1,0 +1,44 @@
+[
+    {
+        "server_id": 0,
+        "fault_time_slots": [18693, 39876, 50233],
+        "cat_pred_fault_time_slots": [18691, 18692, 18693, 39876, 50233],
+        "xgb_pred_fault_time_slots": [4234, 18693, 40672],
+        "lgb_pred_fault_time_slots": [18693, 50233]
+    },
+    {
+        "server_id": 1,
+        "fault_time_slots": [5677, 19056, 48190, 58209],
+        "cat_pred_fault_time_slots": [5676, 5677, 19055, 19056, 48188, 48189, 48190],
+        "xgb_pred_fault_time_slots": [6578, 19056, 58208, 58209],
+        "lgb_pred_fault_time_slots": [16054, 48189, 48190]
+    },
+    {
+        "server_id": 2,
+        "fault_time_slots": [9087, 27675, 47653],
+        "cat_pred_fault_time_slots": [27674, 27675, 47651, 47652, 47653],
+        "xgb_pred_fault_time_slots": [27674, 27675],
+        "lgb_pred_fault_time_slots": [47651, 47652, 47653]
+    },
+    {
+        "server_id": 3,
+        "fault_time_slots": [5683, 17865, 53287],
+        "cat_pred_fault_time_slots": [5682, 5683, 17864, 17865, 53287],
+        "xgb_pred_fault_time_slots": [53286, 53287],
+        "lgb_pred_fault_time_slots": [17864, 17865, 53285, 53286, 53287]
+    },
+    {
+        "server_id": 4,
+        "fault_time_slots": [20178, 32845, 47126],
+        "cat_pred_fault_time_slots": [20177, 20178, 32845, 47124, 47125, 47126],
+        "xgb_pred_fault_time_slots": [32843, 32844, 32845],
+        "lgb_pred_fault_time_slots": [32845, 47125, 47126]
+    },
+    {
+        "server_id": 5,
+        "fault_time_slots": [3906, 27609, 38900, 51760],
+        "cat_pred_fault_time_slots": [3904, 3905, 3906, 27609, 38899, 38900],
+        "xgb_pred_fault_time_slots": [27608, 27609, 38900],
+        "lgb_pred_fault_time_slots": [38899, 38900]
+    }
+]

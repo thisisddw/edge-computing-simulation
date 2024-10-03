@@ -72,7 +72,6 @@ void server_state_update()
     {
         if(server_available[i] && server_next_error[i] <= current_time)
         {
-            // float F_DURATION = 1.0 + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/(5.0 - 1.0)));
             server_available[i] = false;
             server_recover_time[i] = current_time + F_DURATION;
             server_next_error[i] = server_recover_time[i] + exponential(1.0/F_INTERVAL);
@@ -95,49 +94,26 @@ void new_server_state_update()
         {
             server_available[i] = false;
             server_recover_time[i] = current_time + F_DURATION;
+            const auto& fault_time_slots = server_failure_slot_data[i].fault_time_slots;
+            int threshold = current_time / TTR;
 
-            std::ifstream file(filenames[i]);
-            std::string line;
-            // std::cout << "Attempting to open file: " << filenames[i] << std::endl;
+            if (!fault_time_slots.empty()) {
+                auto it = std::find_if(fault_time_slots.begin(), fault_time_slots.end(),
+                    [threshold](int a) { return a > threshold; });
 
-            if (!file.is_open()) {
-                std::cerr << "Failed to open file: " << filenames[i] << std::endl;
-                continue;
+                if (it != fault_time_slots.end()) {
+                    server_next_error[i] = *it * TTR;
+                } else {
+                    server_next_error[i] = N_SLOT * TTR + TTR;
+                }
+            } else {
+                server_next_error[i] = N_SLOT * TTR + TTR;
             }
 
-            int found_one_index = -1;
-            printf("current_time:%d\n", current_time);
-            int n_slot =  current_time/TTR;
-            printf("n_slot:%d\n", n_slot);
-            int line_index = n_slot; 
-            while (std::getline(file, line)) {
-                std::stringstream ss(line);
-                std::string value;
-                int column_index = 0; 
-
-                while (std::getline(ss, value, ',')) {
-                    int val = std::stoi(value); 
-                    if (val == 1) {
-                        found_one_index = line_index; 
-                        break; 
-                    }
-                    column_index++;
-                }
-                if (found_one_index != -1) {
-                    break; 
-                }
-                line_index++;
-            }
-            // printf("found_one_index:%d\n", found_one_index);
-            file.close();
-
-            // server_next_error[i] = server_recover_time[i] + exponential(1.0/F_INTERVAL);
-            server_next_error[i] = server_recover_time[i] + (found_one_index - n_slot)  * TTR + TTR;
             server_failure_histroy.push_back({i, current_time, server_recover_time[i], server_recover_time[i] - current_time});
             IF_DEBUG(printf("\rBS %d failure: [%.3lf, %.3lf] \n", i, current_time, server_recover_time[i]);)
         }
-        if(!server_available[i] && server_recover_time[i] <= current_time)
-        {
+        if (!server_available[i] && server_recover_time[i] <= current_time) {
             server_available[i] = true;
             server_recover_time[i] = 0;
         }

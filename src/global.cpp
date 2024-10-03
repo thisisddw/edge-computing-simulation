@@ -18,6 +18,8 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <common.h>
+#include <nlohmann/json.hpp>
 
 #define SQ(x) (x)*(x)
 extern double uniform_real(double a, double b);
@@ -34,7 +36,7 @@ double path_loss[N_USER][N_BS];
 double channelgains_matrix[N_USER][N_BS];
 
 double current_time;
-
+std::vector<Server_failure_slot> server_failure_slot_data;
 /**
  * @brief Randomly generate locations for users and BSs.
 */
@@ -78,61 +80,71 @@ void server_initialize()
 }
 
 /**
+ * @brief Initialize server failure time and failure prediction results.
+*/
+
+void server_failure_initialize() {
+    const std::string filename = "D:/File/Projects/edge-computing-simulation/data/server_fault_information.json";
+    std::ifstream file(filename);
+    nlohmann::json j;
+    file >> j;
+
+    for (const auto& item : j) {
+        Server_failure_slot group_data;
+        group_data.server_id = item["server_id"].get<int>();
+        group_data.fault_time_slots = item["fault_time_slots"].get<std::vector<int>>();
+        group_data.cat_pred_fault_time_slots = item["cat_pred_fault_time_slots"].get<std::vector<int>>();
+        group_data.xgb_pred_fault_time_slots = item["xgb_pred_fault_time_slots"].get<std::vector<int>>();
+        group_data.lgb_pred_fault_time_slots = item["lgb_pred_fault_time_slots"].get<std::vector<int>>();
+
+        server_failure_slot_data.push_back(group_data);
+    }
+
+    // for (const auto& group_data : server_failure_slot_data) {
+    //     std::cout << "Server ID: " << group_data.server_id << "\n";
+    //     std::cout << "Fault Time Slots: ";
+    //     for (const auto& id : group_data.fault_time_slots) {
+    //         std::cout << id << " ";
+    //     }
+    //     std::cout << "\nCat Pred Fault Time Slots: ";
+    //     for (const auto& id : group_data.cat_pred_fault_time_slots) {
+    //         std::cout << id << " ";
+    //     }
+    //     std::cout << "\nXGB Pred Fault Time Slots: ";
+    //     for (const auto& id : group_data.xgb_pred_fault_time_slots) {
+    //         std::cout << id << " ";
+    //     }
+    //     std::cout << "\nLGB Pred Fault Time Slots: ";
+    //     for (const auto& id : group_data.lgb_pred_fault_time_slots) {
+    //         std::cout << id << " ";
+    //     }
+    //     std::cout << "\n\n";
+    // }
+}
+
+/**
  * @brief Initialize server state and set failure time.
 */
-std::string filenames[N_BS] = {
-        "D:/File/Projects/edge-computing-simulation/data/new_bs_1_label.csv",
-        "D:/File/Projects/edge-computing-simulation/data/new_bs_2_label.csv",
-        "D:/File/Projects/edge-computing-simulation/data/new_bs_3_label.csv",
-        "D:/File/Projects/edge-computing-simulation/data/new_bs_4_label.csv",
-        "D:/File/Projects/edge-computing-simulation/data/new_bs_5_label.csv",
-        "D:/File/Projects/edge-computing-simulation/data/new_bs_6_label.csv"
-    };
 
-void new_server_initialize() {
-    for (int i = 0; i < N_BS; i++) {
-        server_available[i] = true;
-        server_recover_time[i] = 0;
-        server_next_error[i] = -1; 
-    }
-
-    for (int i = 0; i < N_BS; i++) {
-        std::ifstream file(filenames[i]);
-        std::string line;
-        std::cout << "Attempting to open file: " << filenames[i] << std::endl;
-
-        if (!file.is_open()) {
-            std::cerr << "Failed to open file: " << filenames[i] << std::endl;
-            continue;
-        }
-
-        int found_one_index = -1; 
-        int line_index = 0; 
-
-        while (std::getline(file, line)) {
-            std::stringstream ss(line);
-            std::string value;
-            int column_index = 0; 
-
-            while (std::getline(ss, value, ',')) {
-                int val = std::stoi(value); 
-                if (val == 1) {
-                    found_one_index = line_index; 
-                    break; 
-                }
-                column_index++;
-            }
-            if (found_one_index != -1) {
-                break; 
-            }
-            line_index++;
-        }
-        printf("found_one_index:%d\n", found_one_index);
-        server_next_error[i] = found_one_index  * TTR + TTR; 
-        file.close();
-    }
+void new_server_initialize()
+{
     for(int i = 0; i < N_BS; i++)
-        printf("server_available[%d]: %s\n", i, server_available[i] ? "true" : "false"),
-        printf("server_recover_time[%d]: %d\n", i, server_recover_time[i]),
-        printf("server_next_error[%d]: %f\n", i, server_next_error[i]);
+        server_available[i] = true,
+        server_recover_time[i] = 0,
+        server_next_error[i] = N_SLOT * TTR + TTR;
+
+    // set first failure time of each server
+    for (int i = 0; i < N_BS; i++) {
+        if (i < static_cast<int>(server_failure_slot_data.size())) {
+            const auto& fault_time_slots = server_failure_slot_data[i].fault_time_slots;
+
+            if (!fault_time_slots.empty()) {
+                server_next_error[i] = static_cast<int>(*std::min_element(fault_time_slots.begin(), fault_time_slots.end()) * TTR);
+            } else {
+                server_next_error[i] = N_SLOT * TTR + TTR;
+            }
+        } else {
+            server_next_error[i] = N_SLOT * TTR + TTR;
+        }
+    }
 }

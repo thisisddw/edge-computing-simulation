@@ -31,10 +31,31 @@ protected:
     void update(Feedback fb)
     {
         BaseAgent::update(fb);
-        
-        const int A = 0.8;
+        const double A = 0.8;
+        int current_slot = static_cast<int>(current_time / TTR);
+
         for(int i = 0; i < N_BS; i++)
-            estimated_I[i] = A * estimated_I[i] + (1 - A) * fb.i[i];
+        {
+            #ifdef FAILURE_ON
+                bool is_failure_slot = (std::find(server_failure_slot_data[i].cat_pred_fault_time_slots.begin(), 
+                                    server_failure_slot_data[i].cat_pred_fault_time_slots.end(), 
+                                    current_slot) != server_failure_slot_data[i].cat_pred_fault_time_slots.end());
+                                    // (std::find(server_failure_slot_data[i].xgb_pred_fault_time_slots.begin(), 
+                                    // server_failure_slot_data[i].xgb_pred_fault_time_slots.end(), 
+                                    // current_slot) != server_failure_slot_data[i].xgb_pred_fault_time_slots.end()) ||
+                                    // (std::find(server_failure_slot_data[i].lgb_pred_fault_time_slots.begin(), 
+                                    // server_failure_slot_data[i].lgb_pred_fault_time_slots.end(), 
+                                    // current_slot) != server_failure_slot_data[i].lgb_pred_fault_time_slots.end());
+                double prob = is_failure_slot ? 1.0 : 0.0;
+                // if(prob==1){
+                //     printf("current_slot%dprob=1",current_slot);
+                // }
+
+                estimated_I[i] = A * estimated_I[i] + (1 - A) * fb.i[i] * (1 - prob);
+            #else
+                estimated_I[i] = A * estimated_I[i] + (1 - A) * fb.i[i];
+            #endif
+        }
 
         estimation_turns++;
     }

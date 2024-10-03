@@ -33,11 +33,11 @@ vector<Experiment *> main_loop(vector<Experiment *> (*exp_generator)(), int repe
     {
         vector<Experiment *> experiments = exp_generator();
         // server_initialize();
+        server_failure_initialize();
         new_server_initialize();
         for(int i = 0; i < N_SLOT; i++)
         {
             current_time = i * TTR;
-            printf("main loop current_time:%d\n", current_time);
             channelgains_update();
         #ifdef FAILURE_ON
             // server_state_update();

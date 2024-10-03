@@ -25,8 +25,8 @@ int main()
 
     auto exp_generator = []() -> vector<Experiment *> {
         vector<Experiment *> exps = {
-            new RandomExperiment(),
-            // new GreedyExperiment(1),
+            // new RandomExperiment(),
+            new GreedyExperiment(1),
             // new GreedyExperiment(2),
             // new GreedyExperiment(3),
             // new SecondaryGreedyExperiment(1),

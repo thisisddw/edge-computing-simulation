@@ -53,7 +53,7 @@ public:
 
     int act() override
     {
-        return n_action - 1;
+        return n_action - 1; 
     }
     void feedback(double reward) override {}
 };
