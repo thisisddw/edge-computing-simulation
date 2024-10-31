@@ -35,6 +35,7 @@ struct FailureRecord {
     double start;
     double end;
     double duration;
+    int F_INTERVAL;
 };
 
 /**
@@ -44,6 +45,7 @@ struct AgentSummary {
     double gross_trans;       // average transmission rate
     double actual_trans;    // (total size of executed instances) / time
     double inst_done;       // number of executed instances
+    double total_transfer_time;
 };
 
 /**

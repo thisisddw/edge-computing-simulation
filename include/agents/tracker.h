@@ -88,6 +88,12 @@ public:
 
         s.inst_done = n_inst_done.back();
 
+        for(Task *t: agent->job->get_tasks()) {
+            for(Instance *i: t->get_instances()) {
+                s.total_transfer_time += i->is_done() ? (i->size / s.actual_trans) : 0;
+            }
+        }
+
         return s;
     }
 };

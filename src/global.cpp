@@ -37,6 +37,11 @@ double channelgains_matrix[N_USER][N_BS];
 
 double current_time;
 std::vector<Server_failure_slot> server_failure_slot_data;
+
+int server_F_INTERVAL[N_BS];
+std::default_random_engine generator;
+std::uniform_int_distribution<int> distribution(F_INTERVAL_a, F_INTERVAL_b);
+
 /**
  * @brief Randomly generate locations for users and BSs.
 */
@@ -69,14 +74,18 @@ void server_initialize()
         server_available[i] = true,
         server_recover_time[i] = 0,
         server_next_error[i] = N_SLOT * TTR + TTR;
-        // printf("server_available[%d]: %s\n", i, server_available[i] ? "true" : "false"),
-        // printf("server_recover_time[%d]: %d\n", i, server_recover_time[i]),
-        // printf("server_next_error[%d]: %f\n", i, server_next_error[i]);
 
     // set first failure time of each server
+    // server_F_INTERVAL[0] = 20;
+    // server_F_INTERVAL[1] = 20;
+    // server_F_INTERVAL[2] = 20;
+    // server_F_INTERVAL[3] = 20;
+    // server_F_INTERVAL[4] = 20;
+    // server_F_INTERVAL[5] = 20;
     for(int i = 0; i < N_BS; i++)
-        server_next_error[i] = exponential(1.0/F_INTERVAL);
-        // printf("server_next_error[%d]: %f\n", i, server_next_error[i]);
+        server_F_INTERVAL[i] = distribution(generator),
+        server_next_error[i] = exponential(1.0/server_F_INTERVAL[i]);
+        // server_next_error[i] = exponential(1.0/F_INTERVAL);
 }
 
 /**

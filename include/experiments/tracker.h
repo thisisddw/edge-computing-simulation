@@ -62,7 +62,7 @@ public:
         // std::ofstream outFile("server_indices.txt");
         std::ofstream outFile("./result/server_GE.txt", std::ios::app);
         if (!outFile) {
-            std::cerr << "Error opening file for writing." << std::endl;
+            // std::cerr << "Error opening file for writing." << std::endl;
             return;
         }
 

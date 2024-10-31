@@ -11,20 +11,13 @@
 #pragma once
 
 #include "agents/sentientagent.h"
+#include "agents/tracker.h"
+#include "experiments/tracker.h"
 
 class GreedyAgent : public SentientAgent {
-protected:
-    virtual int choose_server(vector<int> server_list)
-    {
-        assert(!server_list.empty());
-        int id = -1;
-        for(int s: server_list)
-            if(id == -1 || estimated_I[s] > estimated_I[id])
-                id = s;
-        return id;
-    }
 public:
-    GreedyAgent(int id, int n_link = N_LINK) : SentientAgent(id, n_link) {}
+    GreedyAgent(int id, int server_chosing_method = SERVER_CHOSING_METHOD::BY_ESTIMATION,
+     int n_link = N_LINK) : SentientAgent(id, server_chosing_method, n_link){}
 
     Action act() override
     {
@@ -36,7 +29,7 @@ public:
             vector<int> server_list = get_available_servers();
             if(server_list.empty()) break;
 
-            int choice = choose_server(server_list);// the only difference with random agent
+            int choice = choose_server(server_list, inst->size);// the only difference with random agent
 
             inst->set_pending();                    // have to set state to pending manually
             sending.push_back({inst, choice, 0});   // inst_ptr, server_id, sent_bits
@@ -49,52 +42,6 @@ public:
     }
 };
 
-class SecondaryGreedyAgent : public SentientAgent {
-protected:
-    virtual int choose_server(vector<int> server_list)
-    {
-        assert(!server_list.empty());
-        // int id = -1;
-        // for(int s: server_list)
-        //     if(id == -1 || estimated_I[s] > estimated_I[id])
-        //         id = s;
-        // return id;
-        int max_id = -1, second_max_id = -1;
-        for(int s: server_list) {
-            if(max_id == -1 || estimated_I[s] > estimated_I[max_id]) {
-                second_max_id = max_id; 
-                max_id = s;          
-            } else if(second_max_id == -1 || estimated_I[s] > estimated_I[second_max_id]) {
-                second_max_id = s;  
-            }
-        }
-        return second_max_id;
-    }
-public:
-    SecondaryGreedyAgent(int id, int n_link = N_LINK) : SentientAgent(id, n_link) {}
-
-    Action act() override
-    {
-        if(estimation_turns < 10) return make_action();
-        while(sending.size() < n_link)
-        {
-            Instance *inst = job->get_available_instance();
-            if(!inst) break;
-            vector<int> server_list = get_available_servers();
-            if(server_list.empty()) break;
-
-            int choice = choose_server(server_list);// the only difference with random agent
-
-            inst->set_pending();                    // have to set state to pending manually
-            sending.push_back({inst, choice, 0});   // inst_ptr, server_id, sent_bits
-        }
-        return make_action();
-    }
-    void feedback(Feedback fb) override
-    {
-        update(fb);
-    }
-};
 
 /**
  * @brief A variety of GreedyAgent with epsilon-greedy strategy. Upon each decision,
@@ -104,21 +51,33 @@ public:
 class EpsGreedyAgent : public GreedyAgent {
 protected:
     const double epsilon;
+    const int server_chosing_method;
 
-    virtual int choose_server(vector<int> server_list) override
+    int choose_server_by_estimation(vector<int> server_list, int size)
     {
-        assert(!server_list.empty());
-
         if(uniform_real(0, 1) < epsilon)
             return server_list[rand() % server_list.size()];
 
-        int id = -1;
-        for(int s: server_list)
-            if(id == -1 || estimated_I[s] > estimated_I[id])
-                id = s;
-        return id;
+        return SentientAgent::choose_server_by_estimation(server_list, size);
+    }
+
+    int choose_server_by_transmission(vector<int> server_list, int size)
+    {
+        if(uniform_real(0, 1) < epsilon)
+            return server_list[rand() % server_list.size()];
+
+        return SentientAgent::choose_server_by_estimation(server_list, size);
+    }
+
+    int choose_server_by_transmission_no_x(vector<int> server_list, int size) override
+    {
+        if(uniform_real(0, 1) < epsilon)
+            return server_list[rand() % server_list.size()];
+
+        return SentientAgent::choose_server_by_estimation(server_list, size);
     }
 
 public:
-    EpsGreedyAgent(int id, double eps) : GreedyAgent(id), epsilon(eps) {}
+    EpsGreedyAgent(int id, int server_chosing_method = SERVER_CHOSING_METHOD::BY_ESTIMATION, double eps = 0.1) : 
+    GreedyAgent(id, server_chosing_method), epsilon(eps), server_chosing_method(server_chosing_method) {}
 };

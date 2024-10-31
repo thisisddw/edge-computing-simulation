@@ -13,4 +13,4 @@
 #include "common.h"
 #include "experiment.h"
 
-void report(const char *path, vector<Experiment *> exps);
+void report(const char *path, vector<Experiment *> exps, vector<ExpSummary> summary);

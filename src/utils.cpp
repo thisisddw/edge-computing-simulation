@@ -16,6 +16,9 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
 
 static std::default_random_engine generator(RANDOM_SEED);
 
@@ -32,6 +35,16 @@ double rician_fading(double K)
     std::complex<double> cn(distribution(generator), distribution(generator));
     auto h = sqrt(K/(K+1)) + sqrt(1/(2*(K+1)))*cn;
     return abs(h);
+}
+
+/**
+ * @brief Generate random number following Rayleigh distribution with parameter sigma.
+*/
+
+double rayleigh_Fading(double sigma) {
+    double u1 = static_cast<double>(rand()) / RAND_MAX;
+    double u2 = static_cast<double>(rand()) / RAND_MAX;
+    return sigma * sqrt(-2 * log(u1)) * cos(2 * M_PI * u2);
 }
 
 /**
@@ -54,13 +67,28 @@ double exponential(double lambda)
 }
 
 /**
+ * @param x_m scale parameter
+ * @param alpha shape parameter
+*/
+double pareto(double x_m, double alpha)
+{
+    double U = uniform_real(0, 1);
+    return x_m * std::pow((1.0 - U), -1.0 / alpha);
+}
+
+/**
  * @brief Update channelgains_matrix according to path loss and rician fading.
 */
 void channelgains_update()
 {
-    for(int i = 0; i < N_USER; i++)
-        for(int j = 0; j < N_BS; j++)
-            channelgains_matrix[i][j] = path_loss[i][j] * pow(10, rician_fading(RICIAN_K)/10);
+    for(int i = 0; i < N_USER; i++){
+        for(int j = 0; j < N_BS; j++){
+            if(std::string(CHANNEL_CHOOSING) == "Rician")
+                channelgains_matrix[i][j] = path_loss[i][j] * pow(10, rician_fading(RICIAN_K)/10);
+            else
+                channelgains_matrix[i][j] = path_loss[i][j] * pow(10, rayleigh_Fading(Rayleigh_sigma)/10);
+        }
+    }
 }
 
 /**
@@ -74,8 +102,9 @@ void server_state_update()
         {
             server_available[i] = false;
             server_recover_time[i] = current_time + F_DURATION;
-            server_next_error[i] = server_recover_time[i] + exponential(1.0/F_INTERVAL);
-            server_failure_histroy.push_back({i, current_time, server_recover_time[i], server_recover_time[i] - current_time});
+            server_next_error[i] = server_recover_time[i] + exponential(1.0/server_F_INTERVAL[i]);
+            // server_next_error[i] = server_recover_time[i] + exponential(1.0/F_INTERVAL);
+            server_failure_histroy.push_back({i, current_time, server_recover_time[i], server_recover_time[i] - current_time, server_F_INTERVAL[i]});
             IF_DEBUG(printf("\rBS %d failure: [%.3lf, %.3lf] \n", i, current_time, server_recover_time[i]);)
         }
         if(!server_available[i] && server_recover_time[i] <= current_time)
@@ -110,7 +139,7 @@ void new_server_state_update()
                 server_next_error[i] = N_SLOT * TTR + TTR;
             }
 
-            server_failure_histroy.push_back({i, current_time, server_recover_time[i], server_recover_time[i] - current_time});
+            server_failure_histroy.push_back({i, current_time, server_recover_time[i], server_recover_time[i] - current_time, F_INTERVAL});
             IF_DEBUG(printf("\rBS %d failure: [%.3lf, %.3lf] \n", i, current_time, server_recover_time[i]);)
         }
         if (!server_available[i] && server_recover_time[i] <= current_time) {

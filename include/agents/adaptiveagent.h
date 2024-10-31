@@ -64,19 +64,9 @@ protected:
     double last_ctl_upd;
     double accumulated_reward;
 
-    virtual int choose_server(vector<int> server_list)
-    {
-        assert(!server_list.empty());
-        int id = -1;
-        for(int s: server_list)
-            if(id == -1 || estimated_I[s] > estimated_I[id])
-                id = s;
-        return id;
-    }
-
 public:
-    AdaptiveAgent(int id, config cfg = config())
-     : SentientAgent(id, cfg.init_number_link), cfg(cfg), controller(cfg.controller)
+    AdaptiveAgent(int id, int server_chosing_method = SERVER_CHOSING_METHOD::BY_ESTIMATION, config cfg = config())
+     : SentientAgent(id, server_chosing_method, cfg.init_number_link), cfg(cfg), controller(cfg.controller)
     {
         if (!cfg.controller)
             this->controller = new TrivialController(n_link);
@@ -190,7 +180,7 @@ public:
             vector<int> server_list = get_available_servers();
             if(server_list.empty()) break;
 
-            int choice = choose_server(server_list);// the only difference with random agent
+            int choice = choose_server(server_list, inst->size);// the only difference with random agent
 
             inst->set_pending();                    // have to set state to pending manually
             sending.push_back({inst, choice, 0});   // inst_ptr, server_id, sent_bits

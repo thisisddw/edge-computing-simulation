@@ -53,9 +53,12 @@ struct Server_failure_slot {
 
 extern std::vector<Server_failure_slot> server_failure_slot_data;
 
+extern int server_F_INTERVAL[N_BS];
+
 /*math functions*/
 
 double uniform_real(double a, double b);
+double pareto(double x_m, double alpha);
 double rician_fading(double K);
 double exponential(double lambda);
 vector<std::pair<double, double>> calculate_transmition_rates(double w, vector<double> h, vector<double> p);

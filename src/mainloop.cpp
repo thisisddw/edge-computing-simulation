@@ -20,7 +20,7 @@
  *  and returned exps would be created with BaseExperiment::average. That means,
  *  if repeat > 1, every input exps should be a BaseExperiment.
 */
-vector<Experiment *> main_loop(vector<Experiment *> (*exp_generator)(), int repeat)
+std::pair<std::vector<Experiment *>, std::vector<ExpSummary>> main_loop(vector<Experiment *> (*exp_generator)(), int repeat)
 {
     assert(repeat >= 1);
 
@@ -32,16 +32,16 @@ vector<Experiment *> main_loop(vector<Experiment *> (*exp_generator)(), int repe
     for (int j = 0; j < repeat; j++)
     {
         vector<Experiment *> experiments = exp_generator();
-        // server_initialize();
-        server_failure_initialize();
-        new_server_initialize();
+        server_initialize();
+        // server_failure_initialize();
+        // new_server_initialize();
         for(int i = 0; i < N_SLOT; i++)
         {
             current_time = i * TTR;
             channelgains_update();
         #ifdef FAILURE_ON
-            // server_state_update();
-            new_server_state_update();
+            server_state_update();
+            // new_server_state_update();
         #endif
             for(auto e: experiments)
                 e->step();
@@ -51,16 +51,18 @@ vector<Experiment *> main_loop(vector<Experiment *> (*exp_generator)(), int repe
     }
     printf("\n");
 
-    if (repeat == 1)
-        return exp_histroy[0];
+    // if (repeat == 1)
+        // return std::make_pair(exp_histroy[0], std::vector<ExpSummary>());
 
     vector<Experiment *> ret;
+    vector<ExpSummary> ret_trans;
     for (unsigned int i = 0; i < exp_histroy[0].size(); i++)
     {
         vector<BaseExperiment *> samples;
         for (auto &it: exp_histroy)
             samples.push_back((BaseExperiment *)(it[i]));
         ret.push_back(BaseExperiment::average(samples));
+        ret_trans.push_back(BaseExperiment::average_summary(samples));
     }
-    return ret;
+    return std::make_pair(ret, ret_trans);
 }

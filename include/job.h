@@ -16,6 +16,7 @@
 #include <vector>
 #include "parameters.h"
 #include "assert.h"
+#include <ctime>
 
 #ifdef DEBUG
     #define IF_DEBUG(x) x
@@ -32,7 +33,7 @@ private:
 public:
     class Task * const parent;
     const double duration;      // unit: s
-    const int size;             // unit: bit
+    const double size;             // unit: bit
 
     // 3 kinds of instance state
     enum {
@@ -41,7 +42,7 @@ public:
         D   // done
     };
 
-    Instance(int d, int size, class Task *parent) : state(A), parent(parent), duration(d), size(size) {}
+    Instance(double d, double size, class Task *parent) : state(A), parent(parent), duration(d), size(size) {}
 
     bool is_available() { return state == A; }
     bool is_pending() { return state == P; }
@@ -167,17 +168,53 @@ public:
     }
 };
 
+
+double pareto(double x_m, double alpha);    // from utils.cpp
+
 class JobLoader {
 private:
     Job jobs[N_USER];
 
-    Job *create_fake_job()
-    {
-        int n_instances = 4000*5, duration = 2, size = 2e6;
-        Job *j = new Job();
-        Task *t = new Task();
-        while(n_instances--)
+    // Job *create_fake_job()
+    // {
+    //     int n_instances = 4000*5, duration = 2, size = 2e6;
+    //     Job *j = new Job();
+    //     Task *t = new Task();
+    //     while(n_instances--)
+    //         t->add(new Instance(duration, size, t));
+    //     j->add(t);
+    //     return j;
+    // }
+
+    Job* create_fake_job() {
+        // int n_instances = 4000 * 5, size = 2e6, duration = 2;
+        int n_instances = 4000 * 5;
+        double size, duration;
+        Job* j = new Job();
+        Task* t = new Task();
+
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+        while (n_instances--) {
+            // size = (std::rand() % 5000001) + 1000000; // [1e6, 15e6]
+            // duration = (size / 1000000); // size=1e6 -> duration=1，size=2e6 -> duration=2...
+
+            // Randomly decide whether to generate a small or large size
+            // if ((std::rand() % 100) < 80) { // 80% chance for small size
+            //     size = 1e6 + (std::rand() % static_cast<int>(2e6)); // Range: 1e6 to 2e6
+            //     // size = 2e6;
+            //     duration = size / 1e6; // Duration based on size
+            // } else { // 20% chance for large size
+            //     size = 3e6 + (std::rand() % static_cast<int>(10e6)); // Range: 3e6 to 5e6
+            //     // size = 4e6;
+            //     duration = size / 1e6; // Duration based on size
+            // }
+
+            size = pareto(1e6 , PP_ALPHA);
+            duration = size / 1e6;
+
             t->add(new Instance(duration, size, t));
+        }
         j->add(t);
         return j;
     }

@@ -16,7 +16,8 @@
 #define EXPAND_AND_STRINGIZE(x) #x
 #define MAKE_ROW(P, DESC) fprintf(f, "| %s | %s | %s |\n", #P, EXPAND_AND_STRINGIZE(P), DESC)
 
-void report(const char *path, vector<Experiment *> exps)
+// void report(const char *path, vector<Experiment *> exps)
+void report(const char *path, vector<Experiment *> exps, vector<ExpSummary> summary)
 {
     char buf[100];
     sprintf(buf, "%sreport.md", path);
@@ -81,16 +82,21 @@ void report(const char *path, vector<Experiment *> exps)
     MAKE_ROW(N_USER, "number of users");
     MAKE_ROW(N_BS, "number of BS");
     MAKE_ROW(RANGE, "users and BSs are scattered in [0,RANGE]*[0,RANGE]");
+    MAKE_ROW(CHANNEL_CHOOSING, "choose of channel");
     MAKE_ROW(RICIAN_K, "K factor of Rician channel    10^0.6");
     MAKE_ROW(N_0, "noise");
     MAKE_ROW(W_SUB, "bandwidth");
     MAKE_ROW(P_MAX, "max transmission power");
     MAKE_ROW(N_LINK, "max number of established links of an agent");
     MAKE_ROW(F_INTERVAL, "average interval between failures");
+    MAKE_ROW(F_INTERVAL_a, "min interval between failures");
+    MAKE_ROW(F_INTERVAL_b, "max interval between failures");
     MAKE_ROW(F_DURATION, "the failure lasts F_DURATION seconds");
+    MAKE_ROW(PP_ALPHA, "alpha of pareto principle");
     MAKE_ROW(N_SLOT, "number of time slots");
     MAKE_ROW(TTR, "time of one transmit frame");
     MAKE_ROW(RANDOM_SEED, "random seed");
+    MAKE_ROW(REPEAT_NUMBER, "number of repeat");
     fprintf(f, "\n");
 
     fprintf(f, "### locations of users and base stations\n\n");
@@ -99,15 +105,15 @@ void report(const char *path, vector<Experiment *> exps)
     fprintf(f, "### server failures\n\n");
 
 #ifdef FAILURE_DETAIL
-    fprintf(f, "| server id | start (s) | end (s) | duration (s) |\n");
-    fprintf(f, "|-----------|-----------|---------|--------------|\n");
+    fprintf(f, "| server id | start (s) | end (s) | duration (s) | F_INTERVAL (s) |\n");
+    fprintf(f, "|-----------|-----------|---------|--------------|--------------|\n");
     std::sort(server_failure_histroy.begin(), server_failure_histroy.end(), 
     [](FailureRecord x, FailureRecord y)->bool {
         if(x.sid != y.sid) return x.sid < y.sid;
         return x.start < y.start;
     });
     for(FailureRecord r: server_failure_histroy)
-        fprintf(f, "|%d|%.3lf|%.3lf|%.3lf|\n", r.sid, r.start, r.end, r.duration);
+        fprintf(f, "|%d|%.3lf|%.3lf|%.3lf|%d|\n", r.sid, r.start, r.end, r.duration, server_F_INTERVAL[r.sid]);
     fprintf(f, "\n");
 #endif
 
@@ -121,11 +127,12 @@ void report(const char *path, vector<Experiment *> exps)
     // fprintf(f, "|NEI (number of executed instances)| number of executed instances |\n\n");
 
     // each experiment has a subsection
-    for(Experiment *e: exps)
-    {
+    for(unsigned int i = 0; i < exps.size(); i++){
+        Experiment *e = exps[i];
+        ExpSummary s = summary[i];
+
         fprintf(f, "### %s\n\n", e->get_name());
 
-        ExpSummary s = ((BaseExperiment *)e)->summarize();
         fprintf(f, "|   |gross trans rate|actual trans rate|instances executed|\n");
         fprintf(f, "|---|----------------|-----------------|------------------|\n");
         for(auto &it: s)
@@ -135,10 +142,12 @@ void report(const char *path, vector<Experiment *> exps)
         }
         fprintf(f, "\n");
 
+        plt::clf();
         auto img1 = ((BaseExperiment *)e)->plot_save(path);
         fprintf(f, "![](%s)\n\n", img1.c_str());
 
     #ifdef PLOT_AGENT
+        plt::clf();
         auto imgs = ((BaseExperiment *)e)->plot_save_agents(path);
         for(auto img: imgs)
         {
@@ -146,7 +155,36 @@ void report(const char *path, vector<Experiment *> exps)
         }
         fprintf(f, "\n");
     #endif
+
     }
+    // for(Experiment *e: exps)
+    // {
+    //     fprintf(f, "### %s\n\n", e->get_name());
+        // ExpSummary s = ((BaseExperiment *)e)->summarize();
+
+    //     fprintf(f, "|   |gross trans rate|actual trans rate|instances executed|\n");
+    //     fprintf(f, "|---|----------------|-----------------|------------------|\n");
+    //     for(auto &it: s)
+    //     {
+    //         fprintf(f, "|%s|%.2lf M|%.2lf M|%.0lf|\n", it.first.c_str(), 
+    //             it.second.gross_trans / 1e6, it.second.actual_trans / 1e6, it.second.inst_done);
+    //     }
+    //     fprintf(f, "\n");
+
+    //     plt::clf();
+    //     auto img1 = ((BaseExperiment *)e)->plot_save(path);
+    //     fprintf(f, "![](%s)\n\n", img1.c_str());
+
+    // #ifdef PLOT_AGENT
+    //     plt::clf();
+    //     auto imgs = ((BaseExperiment *)e)->plot_save_agents(path);
+    //     for(auto img: imgs)
+    //     {
+    //         fprintf(f, "![](%s)\n", img.c_str());
+    //     }
+    //     fprintf(f, "\n");
+    // #endif
+    // }
 
     fclose(f);
 }
