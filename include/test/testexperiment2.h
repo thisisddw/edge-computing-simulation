@@ -11,11 +11,14 @@
 #include "test/testagent.h"
 #include "test/testexperiment.h"
 
-bool strategy_computed;
-vector<int> joint_strategy;
 
 class CSITestAgent : public TestAgent
 {
+public:
+    static bool strategy_computed;
+    static vector<int> joint_strategy;
+
+private:
     const int id;
 public:
     CSITestAgent(int id) : TestAgent(), id(id) {}
@@ -54,8 +57,8 @@ class TestExperiment2 : public TestExperiment {
 public:
     TestExperiment2() : TestExperiment("test-full-CSI")
     {
-        strategy_computed = false;
-        joint_strategy.resize(N_USER);
+        CSITestAgent::strategy_computed = false;
+        CSITestAgent::joint_strategy.resize(N_USER);
         for(int i = 0; i < N_USER; i++)
             agents[i] = new CSITestAgent(i);
     }

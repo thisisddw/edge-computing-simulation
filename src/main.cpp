@@ -15,15 +15,30 @@
 #include <cstdint> 
 #include <ctime>  
 
+#include "test/testexperiment.h"
+
 namespace plt = matplotlibcpp;
 
 extern std::pair<std::vector<Experiment *>, std::vector<ExpSummary>> main_loop(vector<Experiment *> (*exp_generator)(), int repeat); // mainloop.cpp
-// extern void perform_test(); // test.cpp
+extern vector<Experiment *> perform_test(); // test.cpp
+
+static void test()
+{
+    auto experiments = perform_test();
+    
+    for(int i = 0; i < (int)experiments.size(); i++)
+    {
+        TestExperiment *e = (TestExperiment *)experiments[i];
+        plt::plot(e->utility, {{"label", e->get_name()}});
+    }
+    plt::legend();
+    plt::show();
+}
 
 int main()
 {
-    // perform_test();
-    // return 0;
+    test();
+    return 0;
 
     auto exp_generator = []() -> vector<Experiment *> {
         vector<Experiment *> exps = {

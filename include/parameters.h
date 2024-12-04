@@ -19,8 +19,8 @@
 
 /*environment settings*/
 
-#define N_USER 4        // number of users
-#define N_BS 6          // number of BS
+#define N_USER 2        // number of users
+#define N_BS 4          // number of BS
 #define RANGE 20        // users and BSs are scattered in [0,RANGE]*[0,RANGE]
 
 #define CHANNEL_CHOOSING  "Rician"  //channel fast fading between each pair of edge node and UE follows Rician or Rayleigh distribution 
